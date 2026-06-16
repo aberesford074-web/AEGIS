@@ -411,8 +411,8 @@
 
         <section class="view" data-screen="stock">
           <p class="eyebrow">Automation that delivers</p>
-          <h1>Forklift Stock</h1>
-          <p class="lede">Add and edit Forklift Pro trucks from inside the AEGIS Sales OS. Saves write directly to the `Forklift Stock` tab in your Postcodes worked workbook.</p>
+          <h1>Trade Machinery Direct Stock</h1>
+          <p class="lede">Add, edit and remove website stock from inside the AEGIS Sales OS. Saves write directly to the `Forklift Stock` tab used by the Trade Machinery Direct website and Custom GPT actions.</p>
           <div class="toolbar">
             <input id="stockSearch" placeholder="Search trucks, brands, models, status">
             <button class="action" type="button" onclick="loadStock()">Refresh</button>
@@ -421,7 +421,7 @@
           <div class="stock-layout">
             <div class="panel">
               <div class="panel-head">
-                <strong>Forklift Stock sheet</strong>
+                <strong>Website stock sheet</strong>
                 <span id="stockUpdated">Loading...</span>
               </div>
               <div style="overflow:auto">
@@ -433,11 +433,16 @@
             </div>
 
             <div class="form-panel">
-              <h2>Add / Edit Truck</h2>
+              <h2>Add / Edit Website Stock</h2>
               <form id="stockForm">
                 <label>ID <input name="id" required></label>
                 <label>Category
                   <select name="category">
+                    <option value="construction">Construction</option>
+                    <option value="agricultural">Agricultural</option>
+                    <option value="industrial">Industrial</option>
+                    <option value="commercial-vehicles">Commercial vehicles</option>
+                    <option value="plant-equipment">Plant & equipment</option>
                     <option value="forklift-truck">Forklift truck</option>
                     <option value="pallet-truck">Pallet truck</option>
                   </select>
@@ -472,9 +477,11 @@
                 <label class="wide">Description <textarea name="description"></textarea></label>
                 <label class="wide">Bullets <textarea name="bullets" placeholder="Fully serviced | Finance available"></textarea></label>
                 <label class="wide">Image Main <input name="imageMain" placeholder="assets/uploads/trucks/.../main.jpg"></label>
+                <label class="wide">Upload Image <input id="stockImageUpload" type="file" accept="image/*"></label>
                 <label class="wide">Gallery Images <textarea name="galleryImages" placeholder="assets/uploads/trucks/.../main.jpg | assets/uploads/trucks/.../side.jpg"></textarea></label>
                 <label>Sort Order <input name="sortOrder"></label>
-                <button class="action" type="submit">Save Truck</button>
+                <button class="action" type="submit">Save Stock Item</button>
+                <button class="action dark" id="deleteStockButton" type="button">Delete Stock Item</button>
                 <p class="status-line" id="formStatus"></p>
               </form>
             </div>
@@ -565,6 +572,38 @@
         status.textContent = "Editing " + id;
       }
 
+      function uploadStockImage(file) {
+        if (!file) return;
+        const stockId = form.elements.id.value || "website-stock";
+        status.textContent = "Uploading image...";
+        const reader = new FileReader();
+        reader.onload = () => {
+          const base64 = String(reader.result || "").split(",")[1] || "";
+          google.script.run
+            .withSuccessHandler((result) => {
+              if (!result || !result.ok) {
+                status.textContent = result && result.error ? result.error : "Image upload failed.";
+                return;
+              }
+              form.elements.imageMain.value = result.url || "";
+              const existing = form.elements.galleryImages.value.trim();
+              form.elements.galleryImages.value = [existing, result.url].filter(Boolean).join(" | ");
+              status.textContent = "Image uploaded. Save the stock item to use it on the website.";
+            })
+            .withFailureHandler((error) => {
+              status.textContent = error.message || String(error);
+            })
+            .uploadForkliftStockImage({
+              truckId: stockId,
+              slot: "main",
+              fileName: file.name,
+              mimeType: file.type || "image/jpeg",
+              base64
+            });
+        };
+        reader.readAsDataURL(file);
+      }
+
       form.addEventListener("submit", (event) => {
         event.preventDefault();
         status.textContent = "Saving...";
@@ -578,6 +617,32 @@
             status.textContent = error.message || String(error);
           })
           .upsertForkliftStockItem(data);
+      });
+
+      document.querySelector("#stockImageUpload").addEventListener("change", (event) => {
+        uploadStockImage(event.target.files && event.target.files[0]);
+      });
+
+      document.querySelector("#deleteStockButton").addEventListener("click", () => {
+        const id = form.elements.id.value.trim();
+        if (!id) {
+          status.textContent = "Choose a stock item before deleting.";
+          return;
+        }
+        if (!confirm("Delete " + id + " from website stock?")) return;
+        status.textContent = "Deleting...";
+        google.script.run
+          .withSuccessHandler((result) => {
+            status.textContent = result.ok ? "Deleted from website stock." : result.error || "Delete failed.";
+            if (result.ok) {
+              form.reset();
+              loadStock();
+            }
+          })
+          .withFailureHandler((error) => {
+            status.textContent = error.message || String(error);
+          })
+          .deleteForkliftStockItem(id);
       });
 
       search.addEventListener("input", renderStock);

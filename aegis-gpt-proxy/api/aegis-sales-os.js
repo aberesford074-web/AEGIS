@@ -886,8 +886,13 @@ function inferStockCategory(source) {
     source.description
   ].map(cleanString).join(' ').toLowerCase();
 
+  if (text.includes('construction') || text.includes('excavator') || text.includes('digger') || text.includes('dumper')) return 'construction';
+  if (text.includes('agric') || text.includes('tractor') || text.includes('telehandler')) return 'agricultural';
+  if (text.includes('commercial') || text.includes('vehicle') || text.includes('van') || text.includes('tipper')) return 'commercial-vehicles';
+  if (text.includes('plant') || text.includes('equipment') || text.includes('generator') || text.includes('compressor')) return 'plant-equipment';
+  if (text.includes('industrial') || text.includes('warehouse')) return 'industrial';
   if (text.includes('pallet')) return 'pallet-truck';
-  if (text.includes('forklift') || text.includes('truck')) return 'forklift-truck';
+  if (text.includes('forklift')) return 'forklift-truck';
   return '';
 }
 

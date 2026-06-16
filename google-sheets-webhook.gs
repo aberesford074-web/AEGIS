@@ -6686,8 +6686,13 @@ function inferStockCategory_(source) {
     source.description
   ].map(clean_).join(' ').toLowerCase();
 
+  if (text.indexOf('construction') >= 0 || text.indexOf('excavator') >= 0 || text.indexOf('digger') >= 0 || text.indexOf('dumper') >= 0) return 'construction';
+  if (text.indexOf('agric') >= 0 || text.indexOf('tractor') >= 0 || text.indexOf('telehandler') >= 0) return 'agricultural';
+  if (text.indexOf('commercial') >= 0 || text.indexOf('vehicle') >= 0 || text.indexOf('van') >= 0 || text.indexOf('tipper') >= 0) return 'commercial-vehicles';
+  if (text.indexOf('plant') >= 0 || text.indexOf('equipment') >= 0 || text.indexOf('generator') >= 0 || text.indexOf('compressor') >= 0) return 'plant-equipment';
+  if (text.indexOf('industrial') >= 0 || text.indexOf('warehouse') >= 0) return 'industrial';
   if (text.indexOf('pallet') >= 0) return 'pallet-truck';
-  if (text.indexOf('forklift') >= 0 || text.indexOf('truck') >= 0) return 'forklift-truck';
+  if (text.indexOf('forklift') >= 0) return 'forklift-truck';
   return '';
 }
 
@@ -8539,6 +8544,22 @@ function markMarketplaceTruckSold_(truckId) {
   sheet.getRange(rowData.rowNumber, MARKETPLACE_CONFIG.COL_UPDATED_AT).setValue(new Date());
   clearWebAppStateCache_(['marketplace']);
   return true;
+}
+
+function getForkliftStockInventory() {
+  return webAppGetStockState();
+}
+
+function upsertForkliftStockItem(item) {
+  return webAppSaveStockItem(item);
+}
+
+function deleteForkliftStockItem(stockId) {
+  return webAppDeleteStockItem(stockId);
+}
+
+function uploadForkliftStockImage(payload) {
+  return webAppUploadStockPhoto(payload);
 }
 
 function webAppSyncGmailEnquiries(options) {

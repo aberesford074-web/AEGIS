@@ -122,7 +122,7 @@ paths:
               properties:
                 action:
                   type: string
-                  description: Action to run. For new stock/listings use createStockListing or saveStockItem. For editing stock use updateStockItem or editStockListing. For deleting stock use deleteStockItem or deleteStockListing. For a specific Gmail buyer email, use importGmailThreadAsEnquiry with threadId.
+                  description: Action to run. For Trade Machinery Direct website stock use createStockListing or saveStockItem to add machinery, updateStockItem or editStockListing to edit it, uploadImage plus updateStockImages for stock photos, and deleteStockItem or deleteStockListing to remove it. Set featured=yes/true to show it in the homepage featured machines section. For a specific Gmail buyer email, use importGmailThreadAsEnquiry with threadId.
                   enum:
                     - getState
                     - getIntegrationStatus
@@ -244,7 +244,7 @@ paths:
                   additionalProperties: true
                 item:
                   type: object
-                  description: Stock, listing, radar, or content object. Stock needs brand/model/type/price/images. Radar needs source/title/url/summary/tags. Content needs scheduledFor/platform/title/postDraft/status.
+                  description: Stock, listing, radar, or content object. Website stock needs brand/model/type/category/status/featured/price/imageMain/galleryImages. Radar needs source/title/url/summary/tags. Content needs scheduledFor/platform/title/postDraft/status.
                   additionalProperties: true
                 article:
                   type: object
@@ -276,7 +276,7 @@ paths:
                     additionalProperties: true
                 stock:
                   type: object
-                  description: Stock item object for saveStockItem or updateStockItem. Same fields as item.
+                  description: Trade Machinery Direct website stock item for saveStockItem or updateStockItem. Same fields as item.
                   additionalProperties: true
                 listing:
                   type: object
@@ -373,7 +373,7 @@ paths:
                   description: Machine/listing type, for example Electric Pallet Truck or Electric Forklift.
                 category:
                   type: string
-                  description: Stock category, usually pallet-truck or forklift-truck.
+                  description: Website stock category. Use construction, agricultural, industrial, commercial-vehicles, plant-equipment, forklift-truck, or pallet-truck.
                 status:
                   type: string
                   description: Stock status, usually in-stock, sold, reserved, or coming-soon.

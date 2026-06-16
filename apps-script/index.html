@@ -3400,14 +3400,19 @@
       <section class="stockView" id="stockView">
         <div class="viewTitle">
           <span class="eyebrow">Automation that delivers</span>
-          <h2>Forklift Stock Control</h2>
-          <p>Add and edit Forklift Pro trucks from the postcode workbook.</p>
+          <h2>Trade Machinery Direct Stock Control</h2>
+          <p>Add, edit and delete Trade Machinery Direct website stock from the postcode workbook.</p>
         </div>
 
         <div class="stockToolbar">
           <input id="stockSearch" type="text" placeholder="Search trucks, model, power, capacity...">
           <select id="stockCategoryFilter">
             <option value="all">All Categories</option>
+            <option value="construction">Construction</option>
+            <option value="agricultural">Agricultural</option>
+            <option value="industrial">Industrial</option>
+            <option value="commercial-vehicles">Commercial vehicles</option>
+            <option value="plant-equipment">Plant & equipment</option>
             <option value="forklift-truck">Forklift truck</option>
             <option value="pallet-truck">Pallet truck</option>
           </select>
@@ -3417,7 +3422,7 @@
             <option value="Reserved">Reserved</option>
             <option value="Sold">Sold</option>
           </select>
-          <button class="btn green" onclick="newStockItem()">Add Truck</button>
+          <button class="btn green" onclick="newStockItem()">Add Stock</button>
           <button class="btn" onclick="refreshStock()">Refresh</button>
         </div>
 
@@ -3459,7 +3464,7 @@
           <aside class="stockEditor">
             <div class="stockEditorHead">
               <div>
-                <h2 id="stockEditorTitle">Add / Edit Truck</h2>
+                <h2 id="stockEditorTitle">Add / Edit Stock</h2>
                 <span>Synced to Forklift Stock sheet</span>
               </div>
               <button class="btn" onclick="newStockItem()">Clear</button>
@@ -3467,7 +3472,7 @@
 
             <div class="stockForm">
               <label>ID<input id="stockId" type="text" placeholder="toyota-8fbe20u"></label>
-              <label>Category<select id="stockCategory"><option value="forklift-truck">Forklift truck</option><option value="pallet-truck">Pallet truck</option></select></label>
+              <label>Category<select id="stockCategory"><option value="construction">Construction</option><option value="agricultural">Agricultural</option><option value="industrial">Industrial</option><option value="commercial-vehicles">Commercial vehicles</option><option value="plant-equipment">Plant & equipment</option><option value="forklift-truck">Forklift truck</option><option value="pallet-truck">Pallet truck</option></select></label>
               <label>Status<select id="stockStatus"><option value="in-stock">In stock</option><option value="reserved">Reserved</option><option value="sold">Sold</option><option value="draft">Draft</option></select></label>
               <label>Featured<select id="stockFeaturedField"><option>No</option><option>Yes</option></select></label>
               <label>Brand<input id="stockBrand" type="text" placeholder="Toyota"></label>
@@ -3493,7 +3498,8 @@
               <label>Sort Order<input id="stockSortOrder" type="text" placeholder="10"></label>
               <div class="stockSyncStatus" id="stockSyncStatus">Photos upload to Google Drive and save as live website image URLs.</div>
               <div class="stockFormActions">
-                <button class="btn green" onclick="saveStockItem()">Save Truck</button>
+                <button class="btn green" onclick="saveStockItem()">Save Stock</button>
+                <button class="btn" onclick="deleteSelectedStockItem()">Delete Stock</button>
                 <button class="btn" onclick="refreshStock()">Reload Sheet</button>
               </div>
               <section class="listingPack">
@@ -3835,8 +3841,8 @@
         if (!(calendarState.events || []).length && !calendarState.updatedAt) refreshCalendar();
         else renderCalendar();
       } else if (view === 'stock') {
-        document.querySelector('.headline h1').textContent = 'Forklift Stock Control';
-        document.querySelector('.headline p').textContent = 'Add and edit Forklift Pro trucks from the postcode workbook.';
+        document.querySelector('.headline h1').textContent = 'Trade Machinery Direct Stock Control';
+        document.querySelector('.headline p').textContent = 'Add, edit and delete website stock from the postcode workbook.';
         document.querySelector('.controls').style.display = 'none';
         if (!(stockState.items || []).length && !stockState.updatedAt) refreshStock();
         else renderStock();
@@ -5507,6 +5513,11 @@
     function normaliseStockCategory(value) {
       const clean = String(value || '').toLowerCase().trim();
       if (clean === 'all') return 'all';
+      if (clean.includes('construction') || clean.includes('excavator') || clean.includes('digger') || clean.includes('dumper')) return 'construction';
+      if (clean.includes('agric') || clean.includes('tractor') || clean.includes('telehandler')) return 'agricultural';
+      if (clean.includes('commercial') || clean.includes('vehicle') || clean.includes('van') || clean.includes('tipper')) return 'commercial-vehicles';
+      if (clean.includes('plant') || clean.includes('equipment') || clean.includes('generator') || clean.includes('compressor')) return 'plant-equipment';
+      if (clean.includes('industrial') || clean.includes('warehouse')) return 'industrial';
       if (clean.includes('pallet')) return 'pallet-truck';
       if (clean.includes('forklift')) return 'forklift-truck';
       return clean.replace(/\s+/g, '-');
@@ -5521,6 +5532,11 @@
 
     function stockCategoryLabel(value) {
       const clean = normaliseStockCategory(value);
+      if (clean === 'construction') return 'Construction';
+      if (clean === 'agricultural') return 'Agricultural';
+      if (clean === 'industrial') return 'Industrial';
+      if (clean === 'commercial-vehicles') return 'Commercial vehicles';
+      if (clean === 'plant-equipment') return 'Plant & equipment';
       if (clean === 'pallet-truck') return 'Pallet truck';
       if (clean === 'forklift-truck') return 'Forklift truck';
       return value || '';
@@ -5541,21 +5557,21 @@
 
       selectedStockId = id;
       setStockForm(item);
-      document.getElementById('stockEditorTitle').textContent = [item.brand, item.model].filter(Boolean).join(' ') || 'Edit Truck';
+      document.getElementById('stockEditorTitle').textContent = [item.brand, item.model].filter(Boolean).join(' ') || 'Edit Stock';
       generateListingPack();
     }
 
     function newStockItem() {
       selectedStockId = null;
       setStockForm({});
-      document.getElementById('stockEditorTitle').textContent = 'Add Truck';
+      document.getElementById('stockEditorTitle').textContent = 'Add Stock';
       clearListingPack();
     }
 
     function setStockForm(item) {
       const fields = {
         stockId: item.id,
-        stockCategory: normaliseStockCategory(item.category || 'forklift-truck'),
+        stockCategory: normaliseStockCategory(item.category || 'construction'),
         stockStatus: normaliseStockStatus(item.status || 'in-stock'),
         stockFeaturedField: item.featured || 'No',
         stockBrand: item.brand,
@@ -5758,13 +5774,13 @@
       const photo = document.getElementById('stockPhoto').files[0];
       const syncStatus = document.getElementById('stockSyncStatus');
 
-      showToast('Saving truck');
-      syncStatus.textContent = photo ? 'Uploading photo to Google Drive...' : 'Saving truck to sheet...';
+      showToast('Saving stock');
+      syncStatus.textContent = photo ? 'Uploading photo to Google Drive...' : 'Saving stock to sheet...';
 
       uploadStockPhotoIfNeeded(item, photo)
         .then(upload => {
           const sheetItem = applyStockUploadToItem(item, upload);
-          syncStatus.textContent = 'Saving truck to Forklift Stock sheet...';
+          syncStatus.textContent = 'Saving stock to Forklift Stock sheet...';
 
           google.script.run
             .withSuccessHandler(res => {
@@ -5773,7 +5789,7 @@
               syncStatus.textContent = upload && upload.url
                 ? `Saved to Forklift Stock sheet with live photo URL: ${upload.url}`
                 : 'Saved to Forklift Stock sheet. The live website reads this sheet automatically.';
-              showToast('Truck saved');
+              showToast('Stock saved');
               salesDeskState = { leads: [], stockItems: [], stats: {} };
               refreshStock();
             })
@@ -5787,6 +5803,40 @@
           syncStatus.textContent = 'Photo upload failed.';
           showToast(err.message || err);
         });
+    }
+
+    function deleteSelectedStockItem() {
+      const item = getStockForm();
+      const stockId = item.id || selectedStockId;
+      const syncStatus = document.getElementById('stockSyncStatus');
+
+      if (!stockId) {
+        syncStatus.textContent = 'Choose a stock item before deleting.';
+        showToast('Choose stock first');
+        return;
+      }
+
+      if (!confirm(`Delete ${stockId} from Trade Machinery Direct website stock?`)) return;
+
+      syncStatus.textContent = 'Deleting stock item...';
+      google.script.run
+        .withSuccessHandler(res => {
+          if (!res || res.ok === false) {
+            syncStatus.textContent = (res && res.error) || 'Delete failed.';
+            showToast('Delete failed');
+            return;
+          }
+          syncStatus.textContent = `Deleted ${stockId}. The live website reads the updated sheet automatically.`;
+          showToast('Stock deleted');
+          selectedStockId = null;
+          newStockItem();
+          refreshStock();
+        })
+        .withFailureHandler(err => {
+          syncStatus.textContent = 'Delete failed.';
+          showToast(err.message || err);
+        })
+        .webAppDeleteStockItem(stockId);
     }
 
     function uploadStockPhotoIfNeeded(item, photo) {

@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   title: AEGIS Sales OS GPT Action
   version: "1.0.0"
-  description: Compact GPT action for AEGIS Sales OS. One operation routes Gmail, database, stock, LinkedIn, Industry Radar, content schedule, enquiries, and approved writes through the action field.
+  description: Compact GPT action for AEGIS Sales OS. One operation routes Gmail, database, Trade Machinery Direct website stock, LinkedIn, Industry Radar, content schedule, enquiries, and approved writes through the action field.
 servers:
   - url: https://aegis-gpt-proxy.vercel.app
 paths:
@@ -10,7 +10,7 @@ paths:
     post:
       operationId: runAegisSalesOsAction
       summary: Run AEGIS Sales OS action
-      description: Single control endpoint for AEGIS Sales OS. Use action to choose the task. Write actions require confirmed=true after explicit user approval.
+      description: Single control endpoint for AEGIS Sales OS. Use action to choose the task. Write actions require confirmed=true after explicit user approval. For Trade Machinery Direct website stock, use saveStockItem to add machinery, updateStockItem to edit it, deleteStockItem to remove it, uploadImage to upload a stock image, and updateStockImages to attach uploaded image URLs. Set featured=yes/true to show an item in the homepage featured machines section. Use categories construction, agricultural, industrial, commercial-vehicles, plant-equipment, forklift-truck, or pallet-truck.
       security:
         - AegisProxyBearer: []
       requestBody:
@@ -265,13 +265,13 @@ paths:
                   additionalProperties: true
                 stockId:
                   type: string
-                  description: Existing stock/truck ID.
+                  description: Existing website stock/truck ID for updateStockItem, updateStockImages, deleteStockItem, marketplace actions, and emails about a stock item.
                 truckId:
                   type: string
-                  description: Existing stock/truck ID.
+                  description: Existing website stock/truck ID for updateStockItem, updateStockImages, deleteStockItem, marketplace actions, and emails about a stock item.
                 stock:
                   type: object
-                  description: Stock item. Include brand/model/type/category/status/price/description/images where relevant.
+                  description: Trade Machinery Direct website stock item. Include brand/model/type/category/status/featured/price/description/imageMain/galleryImages where relevant. Categories are construction, agricultural, industrial, commercial-vehicles, plant-equipment, forklift-truck, and pallet-truck.
                   additionalProperties: true
                 item:
                   type: object

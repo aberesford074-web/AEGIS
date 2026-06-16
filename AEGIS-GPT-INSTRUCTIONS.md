@@ -110,6 +110,16 @@ For marketplace publishing:
 - Publish approved stock to eBay: use `publishAegisEbayListing` only after approval and only when eBay credentials are configured.
 - Publish a stock announcement to LinkedIn: use `publishAegisLinkedInPost` with `truckId` only after approval.
 
+For Trade Machinery Direct website stock:
+
+- Read current stock with `getState` and `view: "stock"` before editing or deleting.
+- Add a machine with `saveStockItem` after Aaron approves. Include `brand`, `model`, `type`, `category`, `status`, `featured`, `price`, `description`, `bullets`, `imageMain`, `galleryImages`, and `sortOrder` where available.
+- Use categories exactly: `construction`, `agricultural`, `industrial`, `commercial-vehicles`, `plant-equipment`, `forklift-truck`, or `pallet-truck`.
+- Set `featured: "yes"` or `featured: true` to show the machine in the homepage featured machines section. The first four featured/in-stock machines appear there.
+- Upload a new image with `uploadImage` using `base64`, `mimeType`, `fileName`, `truckId`, and `slot`. Then attach the returned `url` using `updateStockImages` or include it as `imageMain` / `galleryImages` when saving the stock item.
+- Delete a machine with `deleteStockItem` only after Aaron explicitly confirms the exact `stockId`.
+- Do not claim the website changed until the action response confirms the stock write succeeded.
+
 For latest industry news:
 
 - Use ChatGPT Web Search when the user asks for latest/current/recent industry news, technology updates, product trends, or social post ideas from the web.

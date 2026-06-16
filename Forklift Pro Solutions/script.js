@@ -27,9 +27,8 @@ let activePalletPage = 1;
 let activeInventoryPage = 1;
 const siteRoot = new URL(".", document.querySelector('script[src*="script.js"]')?.src || window.location.href).href;
 
-const tmdRevealTargets = Array.from(document.querySelectorAll(".tmd-category, .tmd-machine-card, .tmd-featured-benefits article, .tmd-footer article"));
-
 function initTmdReveals() {
+  const tmdRevealTargets = Array.from(document.querySelectorAll(".tmd-category, .tmd-machine-card, .tmd-featured-benefits article, .tmd-footer article"));
   if (!tmdRevealTargets.length) return;
   document.body.classList.add("tmd-motion-ready");
   if (prefersReducedMotion || !("IntersectionObserver" in window)) {
@@ -304,13 +303,28 @@ function formatMoney(value) {
 }
 
 function fallbackImageForCategory(category) {
-  return category === "pallet-truck" ? "../assets/pallet-card.jpeg" : "../assets/hero-electric-forklift.png";
+  const clean = normaliseInventoryCategory(category);
+  const fallbacks = {
+    "pallet-truck": "assets/pallet-card.jpeg",
+    "forklift-truck": "assets/tmd-featured-forklift.png",
+    "industrial": "assets/tmd-category-industrial.jpeg",
+    "agricultural": "assets/tmd-featured-tractor.png",
+    "construction": "assets/tmd-featured-excavator.png",
+    "commercial-vehicles": "assets/tmd-featured-van.png",
+    "plant-equipment": "assets/tmd-category-plant-equipment.jpeg"
+  };
+  return resolveSitePath(fallbacks[clean] || "assets/tmd-featured-forklift.png", "assets/tmd-featured-forklift.png");
 }
 
 function normaliseInventoryCategory(value) {
   const clean = String(value || "").toLowerCase().trim();
+  if (clean.includes("construction") || clean.includes("excavator") || clean.includes("digger") || clean.includes("dumper")) return "construction";
+  if (clean.includes("agric") || clean.includes("tractor") || clean.includes("telehandler")) return "agricultural";
+  if (clean.includes("commercial") || clean.includes("vehicle") || clean.includes("van") || clean.includes("tipper")) return "commercial-vehicles";
+  if (clean.includes("plant") || clean.includes("equipment") || clean.includes("generator") || clean.includes("compressor")) return "plant-equipment";
+  if (clean.includes("industrial") || clean.includes("warehouse")) return "industrial";
   if (clean.includes("pallet")) return "pallet-truck";
-  if (clean.includes("forklift") || clean.includes("truck")) return "forklift-truck";
+  if (clean.includes("forklift")) return "forklift-truck";
   return clean.replace(/\s+/g, "-");
 }
 
@@ -339,7 +353,7 @@ function slugFromText(value) {
 function normaliseInventoryItem(item) {
   const next = { ...item };
   next.id = String(next.id || slugFromText([next.brand, next.model].filter(Boolean).join(" "))).trim();
-  next.category = normaliseInventoryCategory(next.category || "forklift-truck");
+  next.category = normaliseInventoryCategory(next.category || next.type || "forklift-truck");
   next.status = normaliseInventoryStatus(next.status || "in-stock");
   next.featured = next.featured === true || /^yes|true|1$/i.test(String(next.featured || ""));
   next.galleryImages = splitInventoryList(next.galleryImages);
@@ -395,6 +409,45 @@ function truckFromInventoryItem(item) {
     price: formatMoney(item.price),
     points: item.bullets && item.bullets.length ? item.bullets : [item.description || "Inspected, prepared and supplied by Trade Machinery Direct."]
   };
+}
+
+function labelForInventoryCategory(category) {
+  const clean = normaliseInventoryCategory(category);
+  const labels = {
+    "pallet-truck": "Pallet truck",
+    "forklift-truck": "Forklift",
+    "industrial": "Industrial",
+    "agricultural": "Agricultural",
+    "construction": "Construction",
+    "commercial-vehicles": "Van",
+    "plant-equipment": "Plant"
+  };
+  return labels[clean] || String(category || "Machine").replace(/-/g, " ");
+}
+
+function linkForInventoryCategory(category) {
+  const clean = normaliseInventoryCategory(category);
+  if (clean === "pallet-truck") return "electric-pallet-trucks/index.html";
+  if (clean === "forklift-truck" || clean === "industrial") return "used-forklifts/index.html";
+  return `#${clean}`;
+}
+
+function imageForInventoryItem(item) {
+  const fallback = fallbackImageForCategory(item.category);
+  return resolveSitePath(item.imageMain || (item.galleryImages && item.galleryImages[0]), fallback);
+}
+
+function titleForInventoryItem(item) {
+  return [item.brand, item.model].filter(Boolean).join(" ") || item.model || item.title || "Trade Machinery Direct stock";
+}
+
+function specTripletForInventoryItem(item) {
+  const mileage = item.mileage || item.miles;
+  return [
+    [mileage ? "Mileage" : "Hours", mileage || item.hours || "Ask"],
+    [item.fuel ? "Fuel" : item.battery ? "Battery" : "Power", item.fuel || item.battery || item.power || "Ask"],
+    ["Location", item.location || "UK"]
+  ];
 }
 
 function bindProductCards() {
@@ -484,10 +537,11 @@ function renderTruckCards(items) {
 }
 
 function renderHomeInventory(items) {
-  const grid = document.querySelector(".inventory-grid");
+  const grid = document.querySelector(".tmd-machine-grid");
   if (!grid || !items.length) return;
 
   const featured = items
+    .filter((item) => item.status !== "sold" && item.status !== "draft")
     .slice()
     .sort((a, b) => {
       if (Boolean(b.featured) !== Boolean(a.featured)) return Number(Boolean(b.featured)) - Number(Boolean(a.featured));
@@ -496,35 +550,33 @@ function renderHomeInventory(items) {
     .slice(0, 4);
 
   grid.innerHTML = featured.map((item) => {
-    const isPallet = item.category === "pallet-truck";
-    const product = isPallet ? productFromInventoryItem(item) : truckFromInventoryItem(item);
-    const image = isPallet ? (product.images[0] || fallbackImageForCategory(item.category)) : product.image;
+    const title = titleForInventoryItem(item);
+    const image = imageForInventoryItem(item);
+    const specs = specTripletForInventoryItem(item);
     return `
-      <article class="machine-card ${isPallet ? "" : "used-card"}" ${isPallet ? `data-product="${escapeHtml(item.id)}"` : `data-truck="${escapeHtml(item.id)}"`} tabindex="0">
-        ${item.featured ? '<span class="tag">Featured</span>' : ""}
-        <img src="${escapeHtml(image)}" alt="${escapeHtml(product.title)}" onerror="this.onerror=null;this.src='${escapeHtml(fallbackImageForCategory(item.category))}'" />
-        <h3>${escapeHtml(product.title)}</h3>
-        <p>${escapeHtml(product.type)}</p>
-        <dl>
-          <div><dt>Capacity</dt><dd>${escapeHtml(product.capacity || "Ask")}</dd></div>
-          <div><dt>${isPallet ? "Battery" : "Lift height"}</dt><dd>${escapeHtml(isPallet ? product.battery : product.lift)}</dd></div>
-          <div><dt>${item.year ? "Year" : "Status"}</dt><dd>${escapeHtml(item.year || product.tag || item.status || "In stock")}</dd></div>
-          <div><dt>${item.hours ? "Hours" : "Power"}</dt><dd>${escapeHtml(item.hours || item.power || "Ask")}</dd></div>
-        </dl>
-        <strong>${escapeHtml(product.price)}</strong>
-        <a href="${isPallet ? "electric-pallet-trucks/index.html" : "used-forklifts/index.html"}">View details</a>
+      <article class="tmd-machine-card" data-stock-id="${escapeHtml(item.id)}">
+        <div class="tmd-machine-image">
+          <img src="${escapeHtml(image)}" alt="${escapeHtml(title)}" onerror="this.onerror=null;this.src='${escapeHtml(fallbackImageForCategory(item.category))}'" />
+          <span>${escapeHtml(labelForInventoryCategory(item.category))}</span>
+        </div>
+        <div class="tmd-machine-details">
+          <small>${escapeHtml(item.year || item.status || "In stock")}</small>
+          <h3>${escapeHtml(title)}</h3>
+          <p>${escapeHtml(item.type || item.capacity || labelForInventoryCategory(item.category))}</p>
+          <dl>
+            ${specs.map(([term, value]) => `<div><dt>${escapeHtml(term)}</dt><dd>${escapeHtml(value)}</dd></div>`).join("")}
+          </dl>
+          <a href="${escapeHtml(linkForInventoryCategory(item.category))}">View details <span aria-hidden="true">-&gt;</span></a>
+        </div>
       </article>
     `;
   }).join("");
 
-  productCards = Array.from(document.querySelectorAll("[data-product]"));
-  truckCards = Array.from(document.querySelectorAll("[data-truck]"));
-  bindProductCards();
-  bindTruckCards();
+  initTmdReveals();
 }
 
 async function loadInventoryFromJson() {
-  if (!document.querySelector(".used-grid, .model-grid, .inventory-grid")) return;
+  if (!document.querySelector(".used-grid, .model-grid, .inventory-grid, .tmd-machine-grid")) return;
   try {
     const [sheetInventory, localInventory] = await Promise.all([
       loadInventoryFromGoogleSheet().catch(() => ({ items: [] })),
@@ -790,6 +842,8 @@ function gvizStockResponseToInventory(response) {
       tyres: value("Tyres"),
       battery: value("Battery"),
       fuel: value("Fuel"),
+      mileage: value("Mileage"),
+      location: value("Location"),
       price: value("Price"),
       vat: value("VAT"),
       description: value("Description"),
