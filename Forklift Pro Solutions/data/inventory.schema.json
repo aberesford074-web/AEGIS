@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Trade Machinery Direct Inventory",
+  "type": "object",
+  "required": ["updatedAt", "items"],
+  "properties": {
+    "updatedAt": { "type": "string" },
+    "source": { "type": "string" },
+    "items": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "category", "status", "brand", "model", "type", "price", "imageMain"],
+        "properties": {
+          "id": { "type": "string" },
+          "category": { "enum": ["pallet-truck", "forklift-truck"] },
+          "status": { "type": "string" },
+          "featured": { "type": "boolean" },
+          "brand": { "type": "string" },
+          "model": { "type": "string" },
+          "type": { "type": "string" },
+          "power": { "type": "string" },
+          "capacity": { "type": "string" },
+          "liftHeight": { "type": "string" },
+          "year": { "type": "string" },
+          "hours": { "type": "string" },
+          "mast": { "type": "string" },
+          "tyres": { "type": "string" },
+          "battery": { "type": "string" },
+          "fuel": { "type": "string" },
+          "price": { "type": "string" },
+          "vat": { "type": "boolean" },
+          "description": { "type": "string" },
+          "bullets": { "type": "array", "items": { "type": "string" } },
+          "imageMain": { "type": "string" },
+          "galleryImages": { "type": "array", "items": { "type": "string" } },
+          "sortOrder": { "type": "number" }
+        }
+      }
+    }
+  }
+}

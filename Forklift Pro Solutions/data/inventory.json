@@ -1,0 +1,151 @@
+{
+  "updatedAt": "2026-05-22T22:28:13.797Z",
+  "source": "AEGIS Sales OS",
+  "sheet": "Local inventory JSON",
+  "items": [
+    {
+      "id": "aegis-at30-allterrain",
+      "category": "pallet-truck",
+      "status": "in-stock",
+      "featured": true,
+      "brand": "AEGIS",
+      "model": "AT30 AllTerrain",
+      "type": "All-terrain Electric Pallet Truck",
+      "power": "Electric",
+      "capacity": "3,000 kg",
+      "year": "2026",
+      "battery": "48V / 32Ah",
+      "price": "POA",
+      "vat": true,
+      "description": "Heavy-duty all-terrain pallet truck for yards, construction sites, farms and outdoor material movement where standard pallet trucks struggle.",
+      "bullets": [
+        "3,000 kg load capacity",
+        "Built for gravel, yards and rougher outdoor surfaces",
+        "Pedestrian-operated electric handling",
+        "Nationwide delivery and support"
+      ],
+      "imageMain": "assets/allterrain/at30-allterrain-main.jpeg",
+      "galleryImages": [
+        "assets/allterrain/at30-allterrain-main.jpeg",
+        "assets/allterrain/at30-yard.jpeg",
+        "assets/allterrain/at30-warehouse.jpeg"
+      ],
+      "sortOrder": 5
+    },
+    {
+      "id": "ept20-15et2",
+      "category": "pallet-truck",
+      "status": "in-stock",
+      "featured": true,
+      "brand": "TianyuLux",
+      "model": "EPT20-15ET2",
+      "type": "Electric Pallet Truck",
+      "power": "Electric",
+      "capacity": "2,000 kg",
+      "battery": "24V / 150Ah",
+      "price": "2250",
+      "vat": true,
+      "description": "Compact, reliable and easy to manoeuvre. Ideal for moving pallets efficiently in tight spaces.",
+      "bullets": [
+        "Fully serviced",
+        "Battery included",
+        "Nationwide delivery",
+        "Finance available"
+      ],
+      "imageMain": "assets/pallet-card.jpeg",
+      "galleryImages": [
+        "assets/pallet-card.jpeg",
+        "assets/hero-pallet-truck-new.jpeg"
+      ],
+      "sortOrder": 10
+    },
+    {
+      "id": "ept25-20et2",
+      "category": "pallet-truck",
+      "status": "in-stock",
+      "featured": false,
+      "brand": "TianyuLux",
+      "model": "EPT25-20ET2",
+      "type": "Electric Pallet Truck",
+      "power": "Electric",
+      "capacity": "2,500 kg",
+      "battery": "24V / 210Ah",
+      "price": "2750",
+      "vat": true,
+      "description": "A stronger electric pallet truck for busy warehouses that need dependable lifting power and long battery life.",
+      "bullets": [
+        "Fully serviced",
+        "Battery included",
+        "Nationwide delivery",
+        "Finance available"
+      ],
+      "imageMain": "assets/pallet-card.jpeg",
+      "galleryImages": [
+        "assets/pallet-card.jpeg"
+      ],
+      "sortOrder": 20
+    },
+    {
+      "id": "toyota-8fbe20u",
+      "category": "forklift-truck",
+      "status": "in-stock",
+      "featured": true,
+      "brand": "Toyota",
+      "model": "8FBE20U",
+      "type": "Electric Forklift",
+      "power": "Electric",
+      "capacity": "4,000 lbs",
+      "liftHeight": "189 in",
+      "year": "2018",
+      "hours": "3,245 hrs",
+      "mast": "3 Stage",
+      "tyres": "Solid",
+      "battery": "48V",
+      "price": "18500",
+      "vat": true,
+      "description": "3-wheel electric counterbalance forklift in excellent condition, fully serviced and ideal for warehouse use.",
+      "bullets": [
+        "Excellent condition - fully serviced",
+        "Ideal for warehouse and indoor use",
+        "Smooth operation and high efficiency",
+        "Charger included"
+      ],
+      "imageMain": "assets/hero-electric-forklift.png",
+      "galleryImages": [
+        "assets/hero-electric-forklift.png",
+        "assets/hero-used-forklift-lineup.png"
+      ],
+      "sortOrder": 100
+    },
+    {
+      "id": "hyster-j40xnt",
+      "category": "forklift-truck",
+      "status": "in-stock",
+      "featured": false,
+      "brand": "Hyster",
+      "model": "J40XNT",
+      "type": "Electric Forklift",
+      "power": "Electric",
+      "capacity": "4,000 lbs",
+      "liftHeight": "187 in",
+      "year": "2017",
+      "hours": "4,102 hrs",
+      "mast": "3 Stage",
+      "tyres": "Solid",
+      "battery": "48V",
+      "price": "16750",
+      "vat": true,
+      "description": "Electric counterbalance forklift, fully inspected and serviced for smooth indoor warehouse performance.",
+      "bullets": [
+        "Fully inspected and serviced",
+        "Smooth indoor warehouse performance",
+        "Battery and charger included"
+      ],
+      "imageMain": "assets/hero-used-forklift-lineup.png",
+      "galleryImages": [
+        "assets/hero-used-forklift-lineup.png"
+      ],
+      "sortOrder": 110
+    }
+  ]
+}

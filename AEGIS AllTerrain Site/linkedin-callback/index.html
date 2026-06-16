@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="robots" content="noindex">
+    <title>Connecting LinkedIn | AEGIS AllTerrain</title>
+    <style>
+      body {
+        margin: 0;
+        min-height: 100vh;
+        display: grid;
+        place-items: center;
+        background: #050805;
+        color: #f7f8f3;
+        font-family: Arial, Helvetica, sans-serif;
+      }
+
+      main {
+        width: min(520px, calc(100vw - 40px));
+        border: 1px solid rgba(169, 255, 114, .24);
+        padding: 32px;
+      }
+
+      p {
+        color: #c8cec4;
+        line-height: 1.5;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Connecting LinkedIn</h1>
+      <p>Sending the LinkedIn authorisation back to AEGIS Sales OS.</p>
+    </main>
+    <script>
+      const target = new URL('https://aegis-gpt-proxy.vercel.app/api/linkedin/callback');
+      const current = new URL(window.location.href);
+
+      current.searchParams.forEach((value, key) => {
+        target.searchParams.set(key, value);
+      });
+
+      window.location.replace(target.toString());
+    </script>
+  </body>
+</html>

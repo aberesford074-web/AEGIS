@@ -1,0 +1,13 @@
+{
+  "name": "aegis-whatsapp-email-agent",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node --watch src/server.js",
+    "start": "node src/server.js",
+    "start:aaron": "PROFILE=aaron node src/server.js",
+    "start:dad": "PROFILE=dad node src/server.js",
+    "check": "node --check src/server.js && node --check src/config.js && node --check src/store.js && node --check src/gmail.js && node --check src/ai.js && node --check src/whatsapp.js && node --check scripts/create-digest-template.mjs"
+  }
+}

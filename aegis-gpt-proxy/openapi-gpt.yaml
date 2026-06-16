@@ -1,0 +1,408 @@
+openapi: 3.1.0
+info:
+  title: AEGIS Sales OS GPT Action
+  version: "1.0.0"
+  description: Compact GPT action for AEGIS Sales OS. One operation routes Gmail, database, stock, LinkedIn, Industry Radar, content schedule, enquiries, and approved writes through the action field.
+servers:
+  - url: https://aegis-gpt-proxy.vercel.app
+paths:
+  /api/aegis-sales-os:
+    post:
+      operationId: runAegisSalesOsAction
+      summary: Run AEGIS Sales OS action
+      description: Single control endpoint for AEGIS Sales OS. Use action to choose the task. Write actions require confirmed=true after explicit user approval.
+      security:
+        - AegisProxyBearer: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - action
+              additionalProperties: true
+              properties:
+                action:
+                  type: string
+                  description: The Sales OS task to run.
+                  enum:
+                    - getIntegrationStatus
+                    - getState
+                    - getWorkbookSchema
+                    - createSheetTab
+                    - insertSheetRows
+                    - moveRowsDown
+                    - saveSheetRows
+                    - updateSheetRows
+                    - appendSheetRows
+                    - saveSheetCells
+                    - findMultiCompanyCells
+                    - splitMultiCompanyCells
+                    - getDatabaseContext
+                    - getDatabaseEmailRecords
+                    - saveDatabaseRows
+                    - updateDatabaseRows
+                    - enrichDatabaseRows
+                    - saveCompanyResearch
+                    - logEmailActivity
+                    - logEmailSent
+                    - recordSentEmail
+                    - getCampaignEmailContext
+                    - sendCampaignEmailBatch
+                    - sendDueCampaignEmails
+                    - getGmailSyncStatus
+                    - listGmailThreads
+                    - getGmailThread
+                    - syncGmailEnquiries
+                    - importGmailThreadAsEnquiry
+                    - createGmailReplyDraft
+                    - sendGmailReply
+                    - sendEmail
+                    - createEnquiry
+                    - updateSalesLead
+                    - saveStockItem
+                    - updateStockItem
+                    - updateStockImages
+                    - deleteStockItem
+                    - uploadImage
+                    - publishLinkedInPost
+                    - getLinkedInPostHistory
+                    - importLinkedInPostHistory
+                    - getLinkedInProfile
+                    - scanIndustryRadar
+                    - saveIndustryRadarItem
+                    - updateIndustryRadarItem
+                    - draftIndustryPosts
+                    - saveContentItem
+                    - saveContentScheduleItems
+                    - updateContentItem
+                    - scheduleIndustryContent
+                    - publishEbayListing
+                    - buildMarketplaceListingPackage
+                    - exportMarketplaceFeed
+                confirmed:
+                  type: boolean
+                  description: Required and true for writes, sends, imports, syncs, deletes, publishes, uploads, and schedule changes after the user explicitly approves.
+                view:
+                  type: string
+                  description: For getState use pipeline, database, enquiries, opportunities, calendar, stock, marketplace, industry, content, sales, or settings.
+                query:
+                  type: string
+                  description: Search text for Gmail/database/Google Maps style lookups.
+                limit:
+                  type: integer
+                  description: Maximum records or threads to return.
+                options:
+                  type: object
+                  description: Options for scans, drafting, scheduling, sync, filtering, and imports.
+                  additionalProperties: true
+                rows:
+                  type: array
+                  description: Row updates for database or any sheet tab. Each item can include sheetName/sourceSheet, rowNumber, and direct field names. For database rows include company, phone, postcode, address, email, website, linkedIn, contact, sourceUrl, confidence, and notes. Values may be direct fields or nested under values.
+                  items:
+                    type: object
+                    additionalProperties: true
+                row:
+                  type: object
+                  description: Single row update. Include sheetName/sourceSheet and rowNumber for existing rows, or omit rowNumber to append.
+                  additionalProperties: true
+                values:
+                  type: object
+                  description: Field values for one row update or cell/range write. Use with sheetName/sourceSheet and rowNumber for rows. May include any header/column names.
+                  additionalProperties: true
+                databaseUpdate:
+                  type: object
+                  description: Single database update object for updateDatabaseRows/saveCompanyResearch. Include sourceSheet, rowNumber, and researched fields.
+                  additionalProperties: true
+                databaseRows:
+                  type: array
+                  description: Alias for rows. Database company updates; each item may include rowNumber and fields like email, website, linkedIn, sourceUrl, confidence, and notes.
+                  items:
+                    type: object
+                    additionalProperties: true
+                headers:
+                  type: array
+                  description: Headers/columns to create or ensure on a sheet tab.
+                  items:
+                    type: string
+                columns:
+                  type: array
+                  description: Alias for headers/fields to create or ensure on a sheet tab.
+                  items:
+                    type: string
+                sheetName:
+                  type: string
+                  description: Sheet/tab name for workbook editing actions.
+                tabName:
+                  type: string
+                  description: Sheet/tab name alias for workbook editing actions.
+                cells:
+                  type: array
+                  description: Cell/range writes for saveSheetCells. Each item needs sheetName and range/cell plus value or values.
+                  items:
+                    type: object
+                    additionalProperties: true
+                ranges:
+                  type: array
+                  description: Alias for cells. Each item needs sheetName and range plus value or values.
+                  items:
+                    type: object
+                    additionalProperties: true
+                range:
+                  type: string
+                  description: A1 notation range for saveSheetCells, such as A2 or B2:D2.
+                cell:
+                  description: A1 cell/range string or object for saveSheetCells.
+                  oneOf:
+                    - type: string
+                    - type: object
+                      additionalProperties: true
+                value:
+                  description: Single value to write to a cell/range.
+                  oneOf:
+                    - type: string
+                    - type: number
+                    - type: boolean
+                email:
+                  description: For sendEmail this may be an email object. For database row updates this may be the company email address string. Prefer rows[].email or values.email for database updates.
+                  oneOf:
+                    - type: object
+                      additionalProperties: true
+                    - type: string
+                activity:
+                  type: object
+                  description: Email activity log object for logEmailActivity/logEmailSent. Include to/email, company, subject, informationAbout/topic, product/stockId/truckId, summary, sentAt, Gmail thread/message IDs, campaignStep, nextFollowUpAt, and nextAction.
+                  additionalProperties: true
+                to:
+                  type: string
+                  description: Direct recipient email address for sendEmail, createGmailReplyDraft, or sendGmailReply.
+                recipient:
+                  description: Recipient email address or recipient object. Accepts a string email or an object with email/emailAddress/address.
+                  oneOf:
+                    - type: string
+                    - type: object
+                      additionalProperties: true
+                recipientEmail:
+                  type: string
+                  description: Recipient email address alias for sendEmail.
+                recipient_email:
+                  type: string
+                  description: Snake-case recipient email address alias for sendEmail.
+                emailAddress:
+                  type: string
+                  description: Recipient email address alias for sendEmail or company email alias for database updates.
+                email_address:
+                  type: string
+                  description: Snake-case recipient email address alias for sendEmail or company email alias for database updates.
+                databaseEmail:
+                  type: string
+                  description: Company email address for database row enrichment.
+                companyEmail:
+                  type: string
+                  description: Company email address for database row enrichment.
+                recipients:
+                  type: array
+                  description: Recipient list for sendEmail. Each item may be a string or an object with email/emailAddress/address.
+                  items:
+                    oneOf:
+                      - type: string
+                      - type: object
+                        additionalProperties: true
+                subject:
+                  type: string
+                  description: Email subject for sendEmail, createGmailReplyDraft, or sendGmailReply.
+                informationAbout:
+                  type: string
+                  description: What the sent/drafted email was about, such as AEGIS AllTerrain AT30, used forklifts, pallet trucks, quote request, delivery, finance, service, or follow-up.
+                topic:
+                  type: string
+                  description: Alias for informationAbout when logging email activity.
+                summary:
+                  type: string
+                  description: Short summary of what was sent, drafted, discussed, or agreed.
+                campaignStep:
+                  type: string
+                  description: Campaign step such as first outreach, follow-up 1, follow-up 2, reply, quote, or manual email.
+                sentAt:
+                  type: string
+                  description: Date/time the email was sent or drafted.
+                gmailThreadId:
+                  type: string
+                  description: Gmail thread ID to save with email activity where available.
+                gmailMessageId:
+                  type: string
+                  description: Gmail message ID to save with email activity where available.
+                nextFollowUpAt:
+                  type: string
+                  description: Next follow-up date/time after the email activity.
+                nextAction:
+                  type: string
+                  description: Next sales action after the email activity.
+                draftOnly:
+                  type: boolean
+                  description: If true, create a Gmail draft instead of sending. Omit or set false when the user has approved sending.
+                mode:
+                  type: string
+                  description: Use draft to create a Gmail draft instead of sending.
+                reply:
+                  type: object
+                  description: Gmail reply object. Include threadId and body/message/replyBody/draftBody.
+                  additionalProperties: true
+                threadId:
+                  type: string
+                  description: Gmail thread ID.
+                enquiry:
+                  type: object
+                  description: Enquiry object for creating or importing enquiries.
+                  additionalProperties: true
+                leadId:
+                  type: string
+                  description: Sales lead ID for updates.
+                updates:
+                  type: object
+                  description: Field updates for a lead, stock item, radar item, or content item.
+                  additionalProperties: true
+                stockId:
+                  type: string
+                  description: Existing stock/truck ID.
+                truckId:
+                  type: string
+                  description: Existing stock/truck ID.
+                stock:
+                  type: object
+                  description: Stock item. Include brand/model/type/category/status/price/description/images where relevant.
+                  additionalProperties: true
+                item:
+                  type: object
+                  description: Generic Sales OS object for stock, content, radar, listing, or marketplace actions.
+                  additionalProperties: true
+                images:
+                  description: Image update object, gallery image list, or URLs.
+                  oneOf:
+                    - type: object
+                      additionalProperties: true
+                    - type: array
+                      items:
+                        type: string
+                    - type: string
+                image:
+                  type: object
+                  description: Image upload object with base64/mimeType/fileName and optional truckId/slot.
+                  additionalProperties: true
+                article:
+                  type: object
+                  description: Industry Radar article/signal. Include source, title, url, summary, tags, angle, linkedinDraft, and status.
+                  additionalProperties: true
+                content:
+                  type: object
+                  description: Content schedule item. Include scheduledFor, platform, title, postDraft, status, assetUrl, postedUrl, owner, and source fields.
+                  additionalProperties: true
+                posts:
+                  type: array
+                  description: Batch content schedule items.
+                  items:
+                    type: object
+                    additionalProperties: true
+                platform:
+                  type: string
+                  description: Platform such as LinkedIn, ebay, facebook, website, googleBusiness, gumtree, or marketplace.
+                title:
+                  type: string
+                  description: Title for stock, content, listing, or radar item.
+                body:
+                  type: string
+                  description: Email, reply, WhatsApp, post, or note body.
+                message:
+                  type: string
+                  description: Email, reply, WhatsApp, post, or note message.
+                url:
+                  type: string
+                  description: Source, listing, or posted URL.
+                assetUrl:
+                  type: string
+                  description: Image/video URL for LinkedIn post or content schedule.
+                sourceSheet:
+                  type: string
+                  description: Database source sheet filter.
+                withEmailOnly:
+                  type: boolean
+                  description: For database searches, return only records with email addresses.
+                rowNumber:
+                  type: integer
+                  description: Existing row number to update, or insertion point for insertSheetRows.
+                beforeRow:
+                  type: integer
+                  description: Insert rows before this row number for insertSheetRows.
+                afterRow:
+                  type: integer
+                  description: Insert rows after this row number for insertSheetRows.
+                count:
+                  type: integer
+                  description: Number of rows to insert for insertSheetRows.
+                company:
+                  type: string
+                  description: Company name for database, enquiry, activity, or email logging actions.
+                phone:
+                  type: string
+                  description: Phone number to save for a database company.
+                website:
+                  type: string
+                  description: Official company website URL found during research.
+                websiteUrl:
+                  type: string
+                  description: Official company website URL alias for database row enrichment.
+                linkedIn:
+                  type: string
+                  description: LinkedIn company page URL found during research.
+                linkedinUrl:
+                  type: string
+                  description: LinkedIn company page URL alias for database row enrichment.
+                sourceUrl:
+                  type: string
+                  description: Source URL proving the researched contact/detail.
+                researchSource:
+                  type: string
+                  description: Source URL or note proving the researched contact/detail.
+                confidence:
+                  type: string
+                  description: Confidence level for researched database enrichment, such as high, medium, or low.
+      responses:
+        "200":
+          description: AEGIS action result.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AegisProxyResponse"
+        "409":
+          description: Write action needs confirmed=true.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AegisProxyResponse"
+components:
+  securitySchemes:
+    AegisProxyBearer:
+      type: http
+      scheme: bearer
+      description: AEGIS GPT proxy token.
+  schemas:
+    AegisProxyResponse:
+      type: object
+      additionalProperties: true
+      properties:
+        ok:
+          type: boolean
+        proxied:
+          type: boolean
+        upstreamStatus:
+          type: integer
+        requestedAction:
+          type: string
+        action:
+          type: string
+        result:
+          type: object
+          additionalProperties: true
+        error:
+          type: string

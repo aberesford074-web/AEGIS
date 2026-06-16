@@ -1,0 +1,43 @@
+.DS_Store
+
+# Local secrets and account tokens
+.env
+.env.*
+!.env.example
+!*.env.example
+**/.env
+**/.env.*
+!**/.env.example
+!**/*.env.example
+**/*auth*.json
+**/*token*.json
+**/*secret*.json
+**/*.pem
+**/*.key
+
+# Local message/account stores
+aegis-whatsapp-agent/data/store*.json
+
+# Dependencies and build output
+node_modules/
+dist/
+build/
+.next/
+.vercel/
+
+# Local generated/cache folders
+.tmp/
+.codex-tools/
+outputs/
+logs/
+*.log
+
+# Python/editor cache
+__pycache__/
+.pytest_cache/
+.vscode/
+.idea/
+
+# Local tunnel binaries
+tools/cloudflared
+tools/cloudflared.tgz

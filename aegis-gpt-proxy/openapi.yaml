@@ -1,0 +1,1515 @@
+openapi: 3.1.0
+info:
+  title: AEGIS Sales OS
+  version: "1.2.2"
+  description: Private action for AEGIS Sales OS. Covers Gmail, stock, Industry Radar, and Content Schedule. Industry Radar means sector news and social/content ideas, not the company database.
+servers:
+  - url: https://aegis-gpt-proxy.vercel.app
+paths:
+  /api/gmail/status:
+    get:
+      operationId: getAegisGmailSyncStatus
+      summary: Check Gmail sync status
+      description: Shows whether the hourly Gmail enquiry sync trigger is installed.
+      security:
+        - AegisProxyBearer: []
+      responses:
+        "200":
+          description: Gmail sync status.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AegisProxyResponse"
+  /api/gmail/latest:
+    get:
+      operationId: listAegisGmailThreads
+      summary: List recent Gmail threads
+      description: Search recent Gmail threads so the GPT can find enquiries missed by normal sync.
+      security:
+        - AegisProxyBearer: []
+      parameters:
+        - name: query
+          in: query
+          required: false
+          schema:
+            type: string
+          description: Optional Gmail search query.
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 25
+          description: Maximum threads to return.
+      responses:
+        "200":
+          description: Recent Gmail threads.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AegisProxyResponse"
+  /api/gmail/thread:
+    get:
+      operationId: getAegisGmailThread
+      summary: Read a Gmail thread
+      description: Reads one Gmail thread by threadId for enquiry review or reply drafting.
+      security:
+        - AegisProxyBearer: []
+      parameters:
+        - name: threadId
+          in: query
+          required: true
+          schema:
+            type: string
+          description: Gmail thread ID.
+      responses:
+        "200":
+          description: Gmail thread details.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AegisProxyResponse"
+  /api/gmail/sync:
+    post:
+      operationId: syncAegisGmailEnquiries
+      summary: Sync Gmail enquiries
+      description: Imports likely buyer or business emails into AEGIS Sales OS enquiries.
+      security:
+        - AegisProxyBearer: []
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: true
+              properties:
+                confirmed:
+                  type: boolean
+                  description: Must be true after approval because this writes enquiries.
+                days:
+                  type: integer
+                  minimum: 1
+                  maximum: 30
+                maxThreads:
+                  type: integer
+                  minimum: 1
+                  maximum: 100
+      responses:
+        "200":
+          description: Gmail sync result.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AegisProxyResponse"
+  /api/aegis-sales-os:
+    post:
+      operationId: checkGmailAndRunAegisSalesOsAction
+      summary: Check Gmail and run AEGIS Sales OS actions
+      description: Use for Gmail, stock, enquiries, Sales OS views, sync, drafts, and approved writes. For Industry Radar use /api/industry-radar or action=getIndustryRadar with view=industry.
+      security:
+        - AegisProxyBearer: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - action
+              additionalProperties: true
+              properties:
+                action:
+                  type: string
+                  description: Action to run. For new stock/listings use createStockListing or saveStockItem. For editing stock use updateStockItem or editStockListing. For deleting stock use deleteStockItem or deleteStockListing. For a specific Gmail buyer email, use importGmailThreadAsEnquiry with threadId.
+                  enum:
+                    - getState
+                    - getIntegrationStatus
+                    - getDatabaseContext
+                    - getDatabaseEmailRecords
+                    - getCampaignEmailContext
+                    - diagnoseGmailEnquiries
+                    - getGmailSyncStatus
+                    - listGmailThreads
+                    - getGmailThread
+                    - extractBusinessWebsiteContacts
+                    - searchGoogleMapsBusinesses
+                    - createGmailReplyDraft
+                    - sendGmailReply
+                    - createEnquiry
+                    - createMarketplaceEnquiry
+                    - updateSalesLead
+                    - saveDatabaseRows
+                    - moveDatabaseRowsToCampaign
+                    - draftCampaignRows
+                    - scheduleCampaignRows
+                    - sendCampaignEmailBatch
+                    - sendDueCampaignEmails
+                    - saveMarketplaceItem
+                    - buildMarketplaceListingPackage
+                    - prepareMarketplaceListing
+                    - prepareEbayListing
+                    - prepareFacebookListing
+                    - exportMarketplaceFeed
+                    - publishMarketplaceListing
+                    - publishEbayListing
+                    - publishLinkedInPost
+                    - createStockListing
+                    - createStockItem
+                    - addStockListing
+                    - addStockItem
+                    - createListing
+                    - addListing
+                    - saveStockListing
+                    - saveStockItem
+                    - updateStockItem
+                    - editStockItem
+                    - editStockListing
+                    - updateStockListing
+                    - updateStockImages
+                    - deleteStockItem
+                    - removeStockItem
+                    - removeStockListing
+                    - deleteStockListing
+                    - uploadImage
+                    - sendEmail
+                    - sendWhatsApp
+                    - syncGmailEnquiries
+                    - importGmailThreadAsEnquiry
+                    - installGmailSyncTrigger
+                    - scanIndustryRadar
+                    - saveIndustryRadarItem
+                    - updateIndustryRadarItem
+                    - draftIndustryPosts
+                    - saveContentItem
+                    - saveContentScheduleItems
+                    - updateContentItem
+                    - scheduleIndustryContent
+                    - getIndustryRadar
+                    - readIndustryRadar
+                    - showIndustryRadar
+                    - getContentSchedule
+                    - readContentSchedule
+                    - showContentSchedule
+                    - getSocialMediaSchedule
+                    - readSocialMediaSchedule
+                    - showSocialMediaSchedule
+                    - createSocialMediaSchedule
+                    - writeSocialMediaSchedule
+                    - saveSocialMediaSchedule
+                    - createContentSchedule
+                    - writeContentSchedule
+                    - scheduleSocialPosts
+                    - saveSocialPost
+                    - createSocialPost
+                    - saveLinkedInPost
+                    - createLinkedInPost
+                    - scheduleRadarDrafts
+                    - scheduleIndustryRadarPosts
+                    - createScheduleFromIndustryRadar
+                    - saveIndustrySignal
+                    - saveIndustryArticle
+                    - updateIndustrySignal
+                    - draftLinkedInPostsFromRadar
+                    - publishEbayStock
+                    - publishEbayMarketplaceListing
+                    - listOnEbay
+                    - postToLinkedIn
+                    - publishLinkedInContent
+                    - publishLinkedInStockPost
+                    - postStockToLinkedIn
+                view:
+                  type: string
+                  description: For getState, use one of sales, marketplace, industry, content, stock, enquiries, opportunities, calendar, database, pipeline. Use view=industry for Industry Radar sector/news signals, not database.
+                confirmed:
+                  type: boolean
+                  description: Must be true for write actions after the user explicitly approves the change.
+                leadId:
+                  type: string
+                  description: Lead ID for updateSalesLead.
+                updates:
+                  type: object
+                  description: Fields to update for updateSalesLead.
+                  additionalProperties: true
+                rows:
+                  type: array
+                  description: Database row updates for saveDatabaseRows.
+                  items:
+                    type: object
+                    additionalProperties: true
+                enquiry:
+                  type: object
+                  description: Enquiry object for createEnquiry or createMarketplaceEnquiry.
+                  additionalProperties: true
+                item:
+                  type: object
+                  description: Stock, listing, radar, or content object. Stock needs brand/model/type/price/images. Radar needs source/title/url/summary/tags. Content needs scheduledFor/platform/title/postDraft/status.
+                  additionalProperties: true
+                article:
+                  type: object
+                  description: Industry radar article/signal object for saveIndustryRadarItem or updateIndustryRadarItem. Include source, title, url, publishedAt, summary, tags, relevance, angle, linkedinDraft, targetAudience, engagementTargets, status, and notes.
+                  additionalProperties: true
+                options:
+                  type: object
+                  description: Options for scanIndustryRadar, draftIndustryPosts, or scheduleIndustryContent. For scanning, use sourceLimit and limitPerSource. For drafting/scheduling, use count, itemId/itemIds, platform, startDate, status, owner, cta, and allowDuplicates.
+                  additionalProperties: true
+                content:
+                  type: object
+                  description: Content schedule item for saveContentItem or updateContentItem. Include scheduledFor, platform, pillar, status, title, postDraft, sourceType, sourceId, sourceTitle, sourceUrl, tags, targetAudience, cta, assetUrl, postedUrl, owner, and notes.
+                  additionalProperties: true
+                post:
+                  type: object
+                  description: Alias for content schedule item.
+                  additionalProperties: true
+                posts:
+                  type: array
+                  description: Batch content schedule items for saveContentScheduleItems.
+                  items:
+                    type: object
+                    additionalProperties: true
+                schedule:
+                  type: array
+                  description: Batch content schedule items for saveContentScheduleItems.
+                  items:
+                    type: object
+                    additionalProperties: true
+                stock:
+                  type: object
+                  description: Stock item object for saveStockItem or updateStockItem. Same fields as item.
+                  additionalProperties: true
+                listing:
+                  type: object
+                  description: Listing or stock object. For creating stock/listings include brand/make, model, title/name, type, category, price, description, and images.
+                  additionalProperties: true
+                truck:
+                  type: object
+                  description: Truck object for stock creation/editing. Same fields as item.
+                  additionalProperties: true
+                images:
+                  description: Image update object or gallery image URLs. For updateStockImages, include imageMain/main and galleryImages/images. For stock creation, pipe-separate URLs or provide an array of URLs.
+                  oneOf:
+                    - type: object
+                      additionalProperties: true
+                    - type: string
+                    - type: array
+                      items:
+                        type: string
+                image:
+                  type: object
+                  description: Image upload object for uploadImage. Include base64, mimeType, fileName, truckId, and slot.
+                  additionalProperties: true
+                email:
+                  type: object
+                  description: Email/reply object for sendEmail, createGmailReplyDraft, or sendGmailReply. Include threadId or to, subject, and a reply body using body/message/replyBody/draftBody.
+                  additionalProperties: true
+                reply:
+                  type: object
+                  description: Gmail reply object for createGmailReplyDraft or sendGmailReply. Include threadId, body/message/replyBody/draftBody, and optional to/subject/fromName.
+                  additionalProperties: true
+                threadId:
+                  type: string
+                  description: Gmail thread ID for getGmailThread, importGmailThreadAsEnquiry, createGmailReplyDraft, or sendGmailReply.
+                whatsapp:
+                  type: object
+                  description: WhatsApp object for sendWhatsApp. Include phone/to and message/body.
+                  additionalProperties: true
+                stockId:
+                  type: string
+                  description: Existing stock item ID for updateStockItem, updateStockImages, or deleteStockItem.
+                itemId:
+                  type: string
+                  description: Existing industry radar item ID for updateIndustryRadarItem, or existing content item ID for updateContentItem.
+                industryItemId:
+                  type: string
+                  description: Existing industry radar item ID. Alias for itemId.
+                contentId:
+                  type: string
+                  description: Existing content schedule item ID for updateContentItem.
+                customer:
+                  type: string
+                  description: Customer name for enquiry actions.
+                company:
+                  type: string
+                  description: Company name for enquiry actions.
+                phone:
+                  type: string
+                  description: Phone number for enquiry actions.
+                customerEmail:
+                  type: string
+                  description: Customer email address for enquiry actions. The API also accepts top-level email for older Sales OS calls.
+                source:
+                  type: string
+                  description: Source such as Website, eBay, Facebook Marketplace, LinkedIn, Google Business, Gumtree, WhatsApp, phone, email, or an industry publication/source name.
+                platform:
+                  type: string
+                  description: Marketplace/content platform, for example ebay, facebook, linkedin, googleBusiness, gumtree, website, or LinkedIn.
+                url:
+                  type: string
+                  description: Live listing URL to save after publication.
+                listingUrl:
+                  type: string
+                  description: Live listing URL to save after publication. Alias for url.
+                truckId:
+                  type: string
+                  description: AEGIS stock truck ID.
+                title:
+                  type: string
+                  description: Stock/listing title, industry radar article title, or content post title. If brand/model are missing for stock, AEGIS will infer brand and model from this.
+                name:
+                  type: string
+                  description: Stock/listing name. If brand/model are missing, AEGIS will infer brand and model from this.
+                brand:
+                  type: string
+                  description: Stock brand or manufacturer, for example Toyota, Hyster, TianyuLux, AEGIS.
+                make:
+                  type: string
+                  description: Stock make/manufacturer. Alias for brand.
+                model:
+                  type: string
+                  description: Stock model, for example EPT20-15ET2 or 8FBE20U.
+                type:
+                  type: string
+                  description: Machine/listing type, for example Electric Pallet Truck or Electric Forklift.
+                category:
+                  type: string
+                  description: Stock category, usually pallet-truck or forklift-truck.
+                status:
+                  type: string
+                  description: Stock status, usually in-stock, sold, reserved, or coming-soon.
+                featured:
+                  type: string
+                  description: Whether the listing is featured. Use Yes or No.
+                power:
+                  type: string
+                  description: Power type such as Electric, Diesel, LPG.
+                capacity:
+                  type: string
+                  description: Lift/load capacity, for example 2,000 kg.
+                liftHeight:
+                  type: string
+                  description: Lift height, for example 4.8m.
+                year:
+                  type: string
+                  description: Year of manufacture.
+                hours:
+                  type: string
+                  description: Operating hours.
+                mast:
+                  type: string
+                  description: Mast type, for example 3-stage.
+                tyres:
+                  type: string
+                  description: Tyre type.
+                battery:
+                  type: string
+                  description: Battery specification.
+                fuel:
+                  type: string
+                  description: Fuel type.
+                price:
+                  type: string
+                  description: Selling price.
+                vat:
+                  type: string
+                  description: VAT status, for example + VAT or VAT included.
+                description:
+                  type: string
+                  description: Stock/listing description.
+                bullets:
+                  type: string
+                  description: Key listing bullets or features. Can be text or pipe-separated values.
+                features:
+                  type: string
+                  description: Key listing features. Alias for bullets.
+                imageMain:
+                  type: string
+                  description: Main stock image URL.
+                mainImage:
+                  type: string
+                  description: Main stock image URL. Alias for imageMain.
+                galleryImages:
+                  description: Gallery image URLs, pipe-separated, newline-separated, or an array of URLs.
+                  oneOf:
+                    - type: string
+                    - type: array
+                      items:
+                        type: string
+                interestedTruck:
+                  type: string
+                  description: Truck or equipment the buyer asked about.
+                enquiryText:
+                  type: string
+                  description: Enquiry notes or buyer message. For Gmail reply actions, prefer body/message/replyBody/draftBody for the outgoing reply text.
+                summary:
+                  type: string
+                  description: Industry radar article summary or signal notes.
+                tags:
+                  type: string
+                  description: Industry radar tags, pipe-separated or comma-separated, such as automation, forklifts, safety, batteries, rough terrain, warehouse, yard, used equipment.
+                relevance:
+                  type: number
+                  description: Industry radar relevance score from 0 to 100.
+                angle:
+                  type: string
+                  description: AEGIS angle for why an industry radar item matters to AEGIS customers.
+                aegisAngle:
+                  type: string
+                  description: Alias for angle.
+                linkedinDraft:
+                  type: string
+                  description: Draft LinkedIn post text for an industry radar item.
+                targetAudience:
+                  type: string
+                  description: Decision-maker audience to engage for an industry radar item.
+                engagementTargets:
+                  type: string
+                  description: People, roles, or companies to engage with after posting about an industry radar item.
+                publishedAt:
+                  type: string
+                  description: Industry article publish date if known.
+                scheduledFor:
+                  type: string
+                  description: Content schedule date/time, for example 2026-06-09T09:00.
+                scheduledAt:
+                  type: string
+                  description: Alias for scheduledFor.
+                pillar:
+                  type: string
+                  description: Content pillar, for example AEGIS AllTerrain / Yard Handling, Industrial Tech / Automation, or Forklifts / Dealer Insights.
+                postDraft:
+                  type: string
+                  description: Draft social post body for the content schedule.
+                sourceType:
+                  type: string
+                  description: Content source type, such as Industry Radar or Manual.
+                sourceId:
+                  type: string
+                  description: Source item ID, usually an Industry Radar ID.
+                sourceTitle:
+                  type: string
+                  description: Source article or idea title for a scheduled content item.
+                sourceUrl:
+                  type: string
+                  description: Source article URL for a scheduled content item.
+                cta:
+                  type: string
+                  description: Call to action for a scheduled content item.
+                assetUrl:
+                  type: string
+                  description: Image, video, or creative asset URL for a scheduled content item.
+                postedUrl:
+                  type: string
+                  description: Live post URL after publication.
+                owner:
+                  type: string
+                  description: Content owner, usually Aaron.
+                body:
+                  type: string
+                  description: Outgoing email, Gmail reply, WhatsApp, or note body.
+                message:
+                  type: string
+                  description: Outgoing email, Gmail reply, WhatsApp, or note message.
+                replyBody:
+                  type: string
+                  description: Outgoing Gmail reply body for createGmailReplyDraft or sendGmailReply.
+                draftBody:
+                  type: string
+                  description: Outgoing Gmail draft body for createGmailReplyDraft.
+                nextAction:
+                  type: string
+                  description: Recommended next step.
+                notes:
+                  type: string
+                  description: Internal notes.
+                query:
+                  type: string
+                  description: Gmail search query for listGmailThreads, syncGmailEnquiries, or diagnoseGmailEnquiries, or the text query for searchGoogleMapsBusinesses.
+                days:
+                  type: number
+                  description: Optional Gmail search window in days.
+                limit:
+                  type: number
+                  description: Optional maximum number of Gmail threads to return for listGmailThreads, or business results for searchGoogleMapsBusinesses.
+                location:
+                  type: string
+                  description: Optional location qualifier for searchGoogleMapsBusinesses, for example "Leeds" or "West Yorkshire".
+                website:
+                  type: string
+                  description: Website URL for extractBusinessWebsiteContacts, or an override website for business enrichment.
+                includedType:
+                  type: string
+                  description: Optional Google Places type for searchGoogleMapsBusinesses, for example moving_company, storage, warehouse, or restaurant.
+                regionCode:
+                  type: string
+                  description: Optional two-letter CLDR region code for searchGoogleMapsBusinesses, for example GB.
+                languageCode:
+                  type: string
+                  description: Optional BCP 47 language code for searchGoogleMapsBusinesses, for example en-GB.
+                minRating:
+                  type: number
+                  description: Optional minimum Google Maps rating for searchGoogleMapsBusinesses.
+                openNow:
+                  type: boolean
+                  description: Optional flag for searchGoogleMapsBusinesses to return only currently open businesses.
+                rankPreference:
+                  type: string
+                  description: Optional ranking for searchGoogleMapsBusinesses. Use RELEVANCE or DISTANCE.
+                includeEmail:
+                  type: boolean
+                  description: For searchGoogleMapsBusinesses, also fetch each returned business website and extract likely contact emails.
+      responses:
+        "200":
+          description: AEGIS action result.
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                properties:
+                  ok:
+                    type: boolean
+                  proxied:
+                    type: boolean
+                  data:
+                    type: object
+                    additionalProperties: true
+                  error:
+                    type: string
+  /api/integrations:
+    get:
+      operationId: getAegisIntegrationStatus
+      summary: Check AEGIS connected accounts
+      description: Shows Gmail, LinkedIn, eBay, and marketplace connection status for AEGIS Sales OS.
+      security:
+        - AegisProxyBearer: []
+      responses:
+        "200":
+          description: Integration status.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AegisProxyResponse"
+  /api/database:
+    get:
+      operationId: getAegisCompanyDatabase
+      summary: Read company database
+      description: Reads AEGIS company/prospect database rows. Use query parameters here instead of getState/database when searching/filtering rows.
+      security:
+        - AegisProxyBearer: []
+      parameters:
+        - name: query
+          in: query
+          required: false
+          schema:
+            type: string
+          description: Search company, contact, email, phone, postcode, address, notes, or source sheet.
+        - name: sourceSheet
+          in: query
+          required: false
+          schema:
+            type: string
+          description: Limit to one database tab/sheet, for example Database.
+        - name: withEmailOnly
+          in: query
+          required: false
+          schema:
+            type: boolean
+          description: Return only rows where an email is populated.
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: number
+          description: Maximum rows to return, up to 5000.
+      responses:
+        "200":
+          description: Company database context.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AegisProxyResponse"
+    post:
+      operationId: postAegisCompanyDatabaseAction
+      summary: Read company database
+      description: Reads AEGIS company/prospect database rows. Use before updating companies or moving prospects to campaign.
+      security:
+        - AegisProxyBearer: []
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: true
+              properties:
+                action:
+                  type: string
+                  enum:
+                    - getDatabaseContext
+                    - readDatabaseContext
+                    - getCompanyDatabase
+                    - readCompanyDatabase
+                query:
+                  type: string
+                sourceSheet:
+                  type: string
+                limit:
+                  type: number
+                withEmailOnly:
+                  type: boolean
+      responses:
+        "200":
+          description: Company database context.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AegisProxyResponse"
+  /api/database/email-records:
+    get:
+      operationId: getAegisDatabaseRowsWithEmails
+      summary: Find database rows with emails
+      description: Returns company database rows that have an email address. Use this when Aaron asks which database records have emails or asks to identify email-bearing companies.
+      security:
+        - AegisProxyBearer: []
+      parameters:
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: number
+          description: Maximum rows to return.
+        - name: query
+          in: query
+          required: false
+          schema:
+            type: string
+          description: Optional search term within email-bearing rows.
+      responses:
+        "200":
+          description: Email-bearing database rows.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AegisProxyResponse"
+  /api/database/save:
+    post:
+      operationId: saveAegisCompanyDatabaseRows
+      summary: Save company database rows
+      description: Updates existing database rows or appends new company rows. Requires explicit user approval and confirmed=true.
+      security:
+        - AegisProxyBearer: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - confirmed
+              additionalProperties: true
+              properties:
+                confirmed:
+                  type: boolean
+                rows:
+                  type: array
+                  items:
+                    type: object
+                    additionalProperties: true
+                updates:
+                  type: array
+                  items:
+                    type: object
+                    additionalProperties: true
+      responses:
+        "200":
+          description: Database save result.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AegisProxyResponse"
+  /api/campaign/email-context:
+    get:
+      operationId: getAegisCampaignEmailContext
+      summary: Read campaign email status
+      description: Shows campaign rows, drafts, sequence status, sent steps, reply flags, and first-email candidates.
+      security:
+        - AegisProxyBearer: []
+      responses:
+        "200":
+          description: Campaign email context.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AegisProxyResponse"
+    post:
+      operationId: postAegisCampaignEmailContextAction
+      summary: Read campaign email status
+      description: Use to answer who has had email 1, who has replied, and which companies are ready for outreach.
+      security:
+        - AegisProxyBearer: []
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: true
+              properties:
+                action:
+                  type: string
+                  enum:
+                    - getCampaignEmailContext
+                    - readCampaignEmailContext
+                    - showCampaignEmailStatus
+                query:
+                  type: string
+                limit:
+                  type: number
+      responses:
+        "200":
+          description: Campaign email context.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AegisProxyResponse"
+  /api/campaign/send-batch:
+    post:
+      operationId: sendAegisCampaignEmailBatch
+      summary: Send campaign email batch
+      description: Sends or drafts the first eligible campaign emails and updates sequence status. Requires explicit approval and confirmed=true.
+      security:
+        - AegisProxyBearer: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - confirmed
+              additionalProperties: true
+              properties:
+                confirmed:
+                  type: boolean
+                count:
+                  type: number
+                step:
+                  type: number
+                  description: 1 for initial email, 2 or 3 for follow-ups.
+                draftOnly:
+                  type: boolean
+                mode:
+                  type: string
+                query:
+                  type: string
+      responses:
+        "200":
+          description: Campaign send result.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AegisProxyResponse"
+  /api/campaign/move-database:
+    post:
+      operationId: moveAegisDatabaseRowsToCampaign
+      summary: Move database rows to campaign
+      description: Moves selected company database rows into the email campaign and can draft them. Requires confirmed=true.
+      security:
+        - AegisProxyBearer: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - confirmed
+              additionalProperties: true
+              properties:
+                confirmed:
+                  type: boolean
+                rows:
+                  type: array
+                  items:
+                    type: object
+                    additionalProperties: true
+                selection:
+                  type: array
+                  items:
+                    type: object
+                    additionalProperties: true
+                alsoDraft:
+                  type: boolean
+      responses:
+        "200":
+          description: Move result.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AegisProxyResponse"
+  /api/marketplace/ebay/publish:
+    post:
+      operationId: publishAegisEbayListing
+      summary: Publish stock to eBay
+      description: Publishes an approved stock item to eBay and saves the live listing URL in AEGIS. Requires confirmed=true.
+      security:
+        - AegisProxyBearer: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - confirmed
+                - truckId
+              additionalProperties: true
+              properties:
+                confirmed:
+                  type: boolean
+                truckId:
+                  type: string
+                stockId:
+                  type: string
+                price:
+                  type: string
+                quantity:
+                  type: number
+                notes:
+                  type: string
+      responses:
+        "200":
+          description: eBay publish result.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AegisProxyResponse"
+  /api/linkedin/publish:
+    post:
+      operationId: publishAegisLinkedInPost
+      summary: Publish a LinkedIn post
+      description: Posts approved LinkedIn content or a stock announcement, optionally with a public image URL, and saves the live URL in AEGIS. Requires confirmed=true.
+      security:
+        - AegisProxyBearer: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - confirmed
+              additionalProperties: true
+              properties:
+                confirmed:
+                  type: boolean
+                contentId:
+                  type: string
+                itemId:
+                  type: string
+                truckId:
+                  type: string
+                content:
+                  type: object
+                  additionalProperties: true
+                post:
+                  type: object
+                  additionalProperties: true
+                text:
+                  type: string
+                body:
+                  type: string
+                assetUrl:
+                  type: string
+                  description: Public image URL to upload to LinkedIn with the post.
+                imageUrl:
+                  type: string
+                  description: Public image URL. Alias for assetUrl.
+                mediaUrl:
+                  type: string
+                  description: Public image URL. Alias for assetUrl.
+      responses:
+        "200":
+          description: LinkedIn publish result.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AegisProxyResponse"
+  /api/linkedin/history:
+    get:
+      operationId: getAegisLinkedInPostHistory
+      summary: Read LinkedIn post history
+      description: Returns posted LinkedIn history saved in AEGIS, including post text, posted URLs, images, pillars, tags, source links, and stats.
+      security:
+        - AegisProxyBearer: []
+      responses:
+        "200":
+          description: LinkedIn post history.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AegisProxyResponse"
+    post:
+      operationId: postAegisLinkedInPostHistoryAction
+      summary: Read LinkedIn post history
+      description: Reads LinkedIn post history saved in AEGIS. Use before drafting new posts to avoid repetition and match Aaron's recent context.
+      security:
+        - AegisProxyBearer: []
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: true
+              properties:
+                action:
+                  type: string
+                  enum:
+                    - getLinkedInPostHistory
+                    - readLinkedInPostHistory
+                    - getLinkedInHistory
+                    - readLinkedInHistory
+                limit:
+                  type: number
+      responses:
+        "200":
+          description: LinkedIn post history.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AegisProxyResponse"
+  /api/linkedin/history/import:
+    post:
+      operationId: importAegisLinkedInPostHistory
+      summary: Import LinkedIn post history
+      description: Saves older LinkedIn posts into AEGIS content memory. Requires explicit user approval and confirmed=true.
+      security:
+        - AegisProxyBearer: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - confirmed
+              additionalProperties: true
+              properties:
+                confirmed:
+                  type: boolean
+                posts:
+                  type: array
+                  items:
+                    type: object
+                    additionalProperties: true
+                history:
+                  type: array
+                  items:
+                    type: object
+                    additionalProperties: true
+                items:
+                  type: array
+                  items:
+                    type: object
+                    additionalProperties: true
+      responses:
+        "200":
+          description: Import result.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AegisProxyResponse"
+  /api/linkedin/profile:
+    get:
+      operationId: getAegisLinkedInProfile
+      summary: Read connected LinkedIn profile
+      description: Reads the connected LinkedIn profile identity available through OAuth. Use this for profile context before drafting content.
+      security:
+        - AegisProxyBearer: []
+      responses:
+        "200":
+          description: LinkedIn profile context.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AegisProxyResponse"
+    post:
+      operationId: postAegisLinkedInProfileAction
+      summary: Read connected LinkedIn profile
+      description: Reads the connected LinkedIn profile identity available through OAuth.
+      security:
+        - AegisProxyBearer: []
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: true
+              properties:
+                action:
+                  type: string
+                  enum:
+                    - getLinkedInProfile
+                    - readLinkedInProfile
+      responses:
+        "200":
+          description: LinkedIn profile context.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AegisProxyResponse"
+  /api/industry-radar:
+    get:
+      operationId: getAegisIndustryRadar
+      summary: Read AEGIS Industry Radar
+      description: "Read compact AEGIS Industry Radar: sector news, sources, tags, LinkedIn drafts, relevance scores, and engagement targets. Do not use the database view for this."
+      security:
+        - AegisProxyBearer: []
+      responses:
+        "200":
+          description: Industry Radar state.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AegisProxyResponse"
+    post:
+      operationId: postAegisIndustryRadarAction
+      summary: Read or update AEGIS Industry Radar
+      description: Use this when the user asks about Industry Radar, sector news, saved industry signals, or LinkedIn drafts created from radar items. Industry Radar is not the prospect/company database.
+      security:
+        - AegisProxyBearer: []
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: true
+              properties:
+                action:
+                  type: string
+                  enum:
+                    - getIndustryRadar
+                    - scanIndustryRadar
+                    - saveIndustryRadarItem
+                    - updateIndustryRadarItem
+                    - draftIndustryPosts
+                    - draftLinkedInPostsFromRadar
+                confirmed:
+                  type: boolean
+                  description: Must be true for scan, save, update, and draft actions after user approval.
+                item:
+                  type: object
+                  additionalProperties: true
+                article:
+                  type: object
+                  additionalProperties: true
+                options:
+                  type: object
+                  additionalProperties: true
+                itemId:
+                  type: string
+                industryItemId:
+                  type: string
+      responses:
+        "200":
+          description: Industry Radar action result.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AegisProxyResponse"
+  /api/industry-radar/scan:
+    post:
+      operationId: scanAegisIndustryRadar
+      summary: Scan industry sources into AEGIS Industry Radar
+      description: Scans trusted industrial equipment/material-handling sources and saves new signals into Industry Radar. Requires explicit user approval and confirmed=true.
+      security:
+        - AegisProxyBearer: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - confirmed
+              additionalProperties: true
+              properties:
+                confirmed:
+                  type: boolean
+                sourceLimit:
+                  type: number
+                limitPerSource:
+                  type: number
+                options:
+                  type: object
+                  additionalProperties: true
+      responses:
+        "200":
+          description: Scan result.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AegisProxyResponse"
+  /api/industry-radar/draft-posts:
+    post:
+      operationId: draftAegisIndustryRadarLinkedInPosts
+      summary: Draft LinkedIn posts from Industry Radar
+      description: Creates LinkedIn post drafts from saved Industry Radar items and writes the drafts back to AEGIS. Requires explicit user approval and confirmed=true.
+      security:
+        - AegisProxyBearer: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - confirmed
+              additionalProperties: true
+              properties:
+                confirmed:
+                  type: boolean
+                count:
+                  type: number
+                itemId:
+                  type: string
+                options:
+                  type: object
+                  additionalProperties: true
+      responses:
+        "200":
+          description: Drafting result.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AegisProxyResponse"
+  /api/content-schedule:
+    get:
+      operationId: getAegisContentSchedule
+      summary: Read AEGIS Content Schedule
+      description: Returns a compact AEGIS social/content schedule and history, including LinkedIn drafts, scheduled posts, posted URLs, source Industry Radar links, owners, statuses, and stats.
+      security:
+        - AegisProxyBearer: []
+      responses:
+        "200":
+          description: Content schedule state.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AegisProxyResponse"
+    post:
+      operationId: postAegisContentScheduleAction
+      summary: Read or update AEGIS Content Schedule
+      description: Use this for content schedule reads, social media schedule creation, LinkedIn post drafts, and content history updates.
+      security:
+        - AegisProxyBearer: []
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: true
+              properties:
+                action:
+                  type: string
+                  enum:
+                    - getContentSchedule
+                    - getSocialMediaSchedule
+                    - saveContentItem
+                    - saveContentScheduleItems
+                    - updateContentItem
+                    - scheduleIndustryContent
+                    - createSocialMediaSchedule
+                    - writeSocialMediaSchedule
+                    - saveSocialMediaSchedule
+                    - scheduleSocialPosts
+                confirmed:
+                  type: boolean
+                  description: Must be true for save, update, and schedule actions after user approval.
+                content:
+                  type: object
+                  additionalProperties: true
+                item:
+                  type: object
+                  additionalProperties: true
+                post:
+                  type: object
+                  additionalProperties: true
+                posts:
+                  type: array
+                  items:
+                    type: object
+                    additionalProperties: true
+                schedule:
+                  type: array
+                  items:
+                    type: object
+                    additionalProperties: true
+                options:
+                  type: object
+                  additionalProperties: true
+                contentId:
+                  type: string
+                itemId:
+                  type: string
+      responses:
+        "200":
+          description: Content Schedule action result.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AegisProxyResponse"
+  /api/content-schedule/save:
+    post:
+      operationId: saveAegisContentScheduleItem
+      summary: Save one content schedule item
+      description: Writes one LinkedIn/social post draft into the AEGIS Content Schedule. Requires explicit user approval and confirmed=true.
+      security:
+        - AegisProxyBearer: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - confirmed
+              additionalProperties: true
+              properties:
+                confirmed:
+                  type: boolean
+                content:
+                  type: object
+                  additionalProperties: true
+                item:
+                  type: object
+                  additionalProperties: true
+                post:
+                  type: object
+                  additionalProperties: true
+      responses:
+        "200":
+          description: Save result.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AegisProxyResponse"
+  /api/content-schedule/batch:
+    post:
+      operationId: saveAegisContentScheduleItems
+      summary: Save multiple content schedule items
+      description: Writes a social media/content schedule into AEGIS. Use for weekly LinkedIn schedules or multi-post plans. Requires explicit user approval and confirmed=true.
+      security:
+        - AegisProxyBearer: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - confirmed
+              additionalProperties: true
+              properties:
+                confirmed:
+                  type: boolean
+                posts:
+                  type: array
+                  items:
+                    type: object
+                    additionalProperties: true
+                schedule:
+                  type: array
+                  items:
+                    type: object
+                    additionalProperties: true
+                items:
+                  type: array
+                  items:
+                    type: object
+                    additionalProperties: true
+      responses:
+        "200":
+          description: Batch save result.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AegisProxyResponse"
+  /api/content-schedule/update:
+    post:
+      operationId: updateAegisContentScheduleItem
+      summary: Update a content schedule item
+      description: Updates an existing AEGIS Content Schedule item, including draft copy, status, scheduled date, posted URL, owner, notes, or source link. Requires explicit user approval and confirmed=true.
+      security:
+        - AegisProxyBearer: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - confirmed
+              additionalProperties: true
+              properties:
+                confirmed:
+                  type: boolean
+                contentId:
+                  type: string
+                itemId:
+                  type: string
+                updates:
+                  type: object
+                  additionalProperties: true
+                content:
+                  type: object
+                  additionalProperties: true
+      responses:
+        "200":
+          description: Update result.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AegisProxyResponse"
+  /api/content-schedule/schedule-from-radar:
+    post:
+      operationId: scheduleAegisIndustryRadarContent
+      summary: Schedule content from Industry Radar
+      description: Turns saved Industry Radar items into scheduled LinkedIn/social posts in the AEGIS Content Schedule. Requires explicit user approval and confirmed=true.
+      security:
+        - AegisProxyBearer: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - confirmed
+              additionalProperties: true
+              properties:
+                confirmed:
+                  type: boolean
+                count:
+                  type: number
+                itemId:
+                  type: string
+                itemIds:
+                  type: string
+                platform:
+                  type: string
+                startDate:
+                  type: string
+                status:
+                  type: string
+                owner:
+                  type: string
+                cta:
+                  type: string
+                allowDuplicates:
+                  type: boolean
+                options:
+                  type: object
+                  additionalProperties: true
+      responses:
+        "200":
+          description: Scheduling result.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AegisProxyResponse"
+components:
+  schemas:
+    AegisProxyResponse:
+      type: object
+      additionalProperties: true
+      properties:
+        ok:
+          type: boolean
+        proxied:
+          type: boolean
+        upstreamStatus:
+          type: number
+        requestedAction:
+          type: string
+        action:
+          type: string
+        view:
+          type: string
+        note:
+          type: string
+        error:
+          type: string
+        updatedAt:
+          type: string
+        itemsCount:
+          type: number
+        sourcesCount:
+          type: number
+        radarItemsCount:
+          type: number
+        rowsCount:
+          type: number
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/AegisLooseItem"
+        sources:
+          type: array
+          items:
+            $ref: "#/components/schemas/AegisLooseItem"
+        radarItems:
+          type: array
+          items:
+            $ref: "#/components/schemas/AegisLooseItem"
+        rows:
+          type: array
+          items:
+            $ref: "#/components/schemas/AegisLooseItem"
+        stats:
+          $ref: "#/components/schemas/AegisStats"
+        result:
+          $ref: "#/components/schemas/AegisLooseItem"
+    AegisLooseItem:
+      type: object
+      additionalProperties: true
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        name:
+          type: string
+        status:
+          type: string
+        url:
+          type: string
+        summary:
+          type: string
+        source:
+          type: string
+    AegisStats:
+      type: object
+      additionalProperties: true
+      properties:
+        total:
+          type: number
+        sources:
+          type: number
+        scheduled:
+          type: number
+        drafted:
+          type: number
+        posted:
+          type: number
+        newItems:
+          type: number
+  securitySchemes:
+    AegisProxyBearer:
+      type: http
+      scheme: bearer

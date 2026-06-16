@@ -1,0 +1,588 @@
+<!doctype html>
+<html>
+  <head>
+    <base target="_top">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+      :root {
+        color-scheme: dark;
+        --bg: #050606;
+        --panel: #0b0d0c;
+        --panel-2: #111411;
+        --line: rgba(255, 255, 255, .13);
+        --green: #9bed69;
+        --green-2: #5d9d36;
+        --text: #f6f6f2;
+        --muted: #a6aaa3;
+        --soft: rgba(155, 237, 105, .12);
+      }
+
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        min-height: 100vh;
+        background: var(--bg);
+        color: var(--text);
+        font-family: Arial, Helvetica, sans-serif;
+      }
+
+      .app {
+        min-height: 100vh;
+        display: grid;
+        grid-template-columns: 245px minmax(0, 1fr);
+      }
+
+      aside {
+        border-right: 1px solid var(--line);
+        background: #020303;
+        padding: 28px 18px;
+        display: flex;
+        flex-direction: column;
+        gap: 26px;
+      }
+
+      .brand {
+        min-height: 78px;
+        display: grid;
+        align-content: center;
+      }
+
+      .brand-mark {
+        font-size: 24px;
+        letter-spacing: .55em;
+        font-weight: 900;
+      }
+
+      .brand small {
+        color: var(--muted);
+        letter-spacing: .28em;
+        text-transform: uppercase;
+        font-size: 10px;
+      }
+
+      .nav {
+        display: grid;
+        gap: 9px;
+      }
+
+      .nav button {
+        height: 48px;
+        display: grid;
+        grid-template-columns: 38px 1fr;
+        align-items: center;
+        gap: 12px;
+        border: 1px solid transparent;
+        border-radius: 7px;
+        background: transparent;
+        color: var(--muted);
+        font: inherit;
+        font-size: 13px;
+        font-weight: 900;
+        letter-spacing: .12em;
+        text-align: left;
+        text-transform: uppercase;
+        cursor: pointer;
+      }
+
+      .nav button span:first-child {
+        text-align: center;
+        color: #f0f0ea;
+      }
+
+      .nav button.is-active {
+        border-color: rgba(155, 237, 105, .45);
+        background: linear-gradient(90deg, rgba(155, 237, 105, .16), rgba(155, 237, 105, .03));
+        color: var(--green);
+        box-shadow: inset 0 0 18px rgba(155, 237, 105, .08);
+      }
+
+      .status {
+        margin-top: auto;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 18px;
+        color: var(--muted);
+        line-height: 1.45;
+      }
+
+      .status strong {
+        display: block;
+        color: var(--green);
+        letter-spacing: .12em;
+        text-transform: uppercase;
+        font-size: 12px;
+        margin-bottom: 10px;
+      }
+
+      main {
+        min-width: 0;
+        background:
+          radial-gradient(circle at 70% 18%, rgba(155, 237, 105, .08), transparent 26%),
+          linear-gradient(90deg, #f7f7f4 0, #f7f7f4 72%, #071009 72%, #030504 100%);
+        color: #111;
+        overflow: hidden;
+      }
+
+      .view {
+        display: none;
+        min-height: 100vh;
+        padding: 44px 44px 34px;
+      }
+
+      .view.is-active { display: block; }
+
+      .eyebrow {
+        margin: 0 0 12px;
+        color: #4a852c;
+        font-size: 12px;
+        font-weight: 900;
+        letter-spacing: .28em;
+        text-transform: uppercase;
+      }
+
+      h1 {
+        margin: 0;
+        max-width: 760px;
+        color: #050505;
+        font-size: clamp(42px, 6vw, 74px);
+        line-height: .9;
+        letter-spacing: 0;
+      }
+
+      .lede {
+        max-width: 560px;
+        color: #30332f;
+        font-size: 18px;
+        line-height: 1.35;
+        margin: 18px 0 30px;
+      }
+
+      .toolbar {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        margin: 0 0 18px;
+      }
+
+      input, select, textarea {
+        width: 100%;
+        border: 1px solid rgba(0, 0, 0, .12);
+        border-radius: 7px;
+        background: #fff;
+        color: #111;
+        font: inherit;
+        padding: 13px 14px;
+      }
+
+      textarea {
+        min-height: 88px;
+        resize: vertical;
+      }
+
+      button.action {
+        border: 0;
+        border-radius: 7px;
+        background: linear-gradient(135deg, #c7ff92, #4f8f2c);
+        color: #080908;
+        font: inherit;
+        font-weight: 900;
+        letter-spacing: .08em;
+        text-transform: uppercase;
+        padding: 14px 22px;
+        cursor: pointer;
+        white-space: nowrap;
+      }
+
+      button.dark {
+        background: linear-gradient(180deg, #1b1c1a, #030303);
+        color: #fff;
+      }
+
+      .stock-layout {
+        display: grid;
+        grid-template-columns: minmax(0, 1.25fr) 440px;
+        gap: 28px;
+      }
+
+      .panel {
+        border: 1px solid rgba(0, 0, 0, .12);
+        border-radius: 8px;
+        background: rgba(255, 255, 255, .72);
+        box-shadow: 0 22px 70px rgba(0, 0, 0, .12);
+        overflow: hidden;
+      }
+
+      .panel-head {
+        display: flex;
+        justify-content: space-between;
+        gap: 14px;
+        align-items: center;
+        padding: 18px;
+        border-bottom: 1px solid rgba(0, 0, 0, .12);
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+
+      th, td {
+        padding: 16px 18px;
+        border-bottom: 1px solid rgba(0, 0, 0, .1);
+        text-align: left;
+        vertical-align: top;
+      }
+
+      th {
+        color: #6c7169;
+        font-size: 11px;
+        font-weight: 900;
+        letter-spacing: .14em;
+        text-transform: uppercase;
+      }
+
+      td {
+        color: #111;
+        font-size: 14px;
+        font-weight: 700;
+      }
+
+      .pill {
+        display: inline-flex;
+        padding: 6px 9px;
+        border: 1px solid rgba(0, 0, 0, .15);
+        border-radius: 999px;
+        font-size: 11px;
+        text-transform: uppercase;
+      }
+
+      .form-panel {
+        background: #080a09;
+        color: var(--text);
+        border: 1px solid rgba(255, 255, 255, .13);
+        border-radius: 8px;
+        padding: 22px;
+      }
+
+      .form-panel h2 {
+        margin: 0 0 22px;
+        font-size: 29px;
+      }
+
+      form {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+      }
+
+      label {
+        display: grid;
+        gap: 8px;
+        color: var(--muted);
+        font-size: 11px;
+        font-weight: 900;
+        letter-spacing: .1em;
+        text-transform: uppercase;
+      }
+
+      .wide, form button, .status-line {
+        grid-column: 1 / -1;
+      }
+
+      .form-panel input,
+      .form-panel select,
+      .form-panel textarea {
+        border-color: rgba(255, 255, 255, .13);
+        background: #050605;
+        color: var(--text);
+      }
+
+      .status-line {
+        min-height: 20px;
+        color: var(--green);
+        font-size: 13px;
+      }
+
+      .placeholder-grid {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 16px;
+        max-width: 980px;
+      }
+
+      .metric {
+        min-height: 118px;
+        border-radius: 8px;
+        padding: 20px;
+        background: linear-gradient(145deg, #171917, #050605);
+        color: #fff;
+        box-shadow: 0 20px 50px rgba(0, 0, 0, .18);
+      }
+
+      .metric span {
+        color: var(--muted);
+        font-size: 11px;
+        font-weight: 900;
+        letter-spacing: .16em;
+        text-transform: uppercase;
+      }
+
+      .metric strong {
+        display: block;
+        margin-top: 16px;
+        font-size: 40px;
+      }
+
+      @media (max-width: 1120px) {
+        .app { grid-template-columns: 1fr; }
+        aside { position: static; }
+        .nav { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        main { background: #f7f7f4; }
+        .stock-layout { grid-template-columns: 1fr; }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app">
+      <aside>
+        <div class="brand">
+          <div class="brand-mark">AEGIS</div>
+          <small>Automations</small>
+        </div>
+        <nav class="nav" aria-label="AEGIS Sales OS">
+          <button type="button" data-view="dashboard"><span>D</span><span>Dashboard</span></button>
+          <button type="button" data-view="pipeline"><span>P</span><span>Pipeline</span></button>
+          <button type="button" data-view="enquiries"><span>EQ</span><span>Enquiries</span></button>
+          <button type="button" data-view="database"><span>DB</span><span>Database</span></button>
+          <button type="button" data-view="opportunities"><span>OP</span><span>Opportunities</span></button>
+          <button type="button" data-view="calendar"><span>CA</span><span>Calendar</span></button>
+          <button type="button" data-view="stock"><span>ST</span><span>Stock</span></button>
+          <button type="button" data-view="ai"><span>AI</span><span>AI Content</span></button>
+          <button type="button" data-view="settings"><span>S</span><span>Settings</span></button>
+        </nav>
+        <div class="status">
+          <strong>System Status</strong>
+          All systems operational
+        </div>
+      </aside>
+
+      <main>
+        <section class="view" data-screen="dashboard">
+          <p class="eyebrow">Automation that delivers</p>
+          <h1>AEGIS Sales OS</h1>
+          <p class="lede">Your operating layer for postcode outreach, forklift enquiries, opportunities, calendar activity, and Forklift Pro stock.</p>
+          <div class="placeholder-grid" id="dashboardMetrics">
+            <div class="metric"><span>Pipeline</span><strong>-</strong></div>
+            <div class="metric"><span>Enquiries</span><strong>-</strong></div>
+            <div class="metric"><span>Opportunities</span><strong>-</strong></div>
+            <div class="metric"><span>Stock Items</span><strong id="stockCount">-</strong></div>
+          </div>
+        </section>
+
+        <section class="view" data-screen="pipeline">
+          <p class="eyebrow">Automation that delivers</p>
+          <h1>Pipeline</h1>
+          <p class="lede">Pipeline controls remain connected to the same Apps Script backend and postcode workbook.</p>
+        </section>
+
+        <section class="view" data-screen="enquiries">
+          <p class="eyebrow">Automation that delivers</p>
+          <h1>Enquiries</h1>
+          <p class="lede">Forklift enquiries stay in the Postcodes worked workbook alongside stock and opportunities.</p>
+        </section>
+
+        <section class="view" data-screen="database">
+          <p class="eyebrow">Automation that delivers</p>
+          <h1>Database</h1>
+          <p class="lede">Your postcode database remains the source workbook for the Sales OS.</p>
+        </section>
+
+        <section class="view" data-screen="opportunities">
+          <p class="eyebrow">Automation that delivers</p>
+          <h1>Opportunity Inbox</h1>
+          <p class="lede">Replied companies, AI reply drafts, approvals, and deal stages.</p>
+        </section>
+
+        <section class="view" data-screen="calendar">
+          <p class="eyebrow">Automation that delivers</p>
+          <h1>Calendar Command</h1>
+          <p class="lede">Upcoming calls, linked opportunities, and booking link management.</p>
+        </section>
+
+        <section class="view" data-screen="stock">
+          <p class="eyebrow">Automation that delivers</p>
+          <h1>Forklift Stock</h1>
+          <p class="lede">Add and edit Forklift Pro trucks from inside the AEGIS Sales OS. Saves write directly to the `Forklift Stock` tab in your Postcodes worked workbook.</p>
+          <div class="toolbar">
+            <input id="stockSearch" placeholder="Search trucks, brands, models, status">
+            <button class="action" type="button" onclick="loadStock()">Refresh</button>
+          </div>
+
+          <div class="stock-layout">
+            <div class="panel">
+              <div class="panel-head">
+                <strong>Forklift Stock sheet</strong>
+                <span id="stockUpdated">Loading...</span>
+              </div>
+              <div style="overflow:auto">
+                <table>
+                  <thead><tr><th>ID</th><th>Truck</th><th>Category</th><th>Status</th><th>Price</th><th></th></tr></thead>
+                  <tbody id="stockRows"><tr><td colspan="6">Loading stock...</td></tr></tbody>
+                </table>
+              </div>
+            </div>
+
+            <div class="form-panel">
+              <h2>Add / Edit Truck</h2>
+              <form id="stockForm">
+                <label>ID <input name="id" required></label>
+                <label>Category
+                  <select name="category">
+                    <option value="forklift-truck">Forklift truck</option>
+                    <option value="pallet-truck">Pallet truck</option>
+                  </select>
+                </label>
+                <label>Status
+                  <select name="status">
+                    <option value="in-stock">In stock</option>
+                    <option value="reserved">Reserved</option>
+                    <option value="sold">Sold</option>
+                    <option value="draft">Draft</option>
+                  </select>
+                </label>
+                <label>Featured
+                  <select name="featured"><option value="">No</option><option value="yes">Yes</option></select>
+                </label>
+                <label>Brand <input name="brand"></label>
+                <label>Model <input name="model"></label>
+                <label>Type <input name="type"></label>
+                <label>Power <input name="power"></label>
+                <label>Capacity <input name="capacity"></label>
+                <label>Lift Height <input name="liftHeight"></label>
+                <label>Year <input name="year"></label>
+                <label>Hours <input name="hours"></label>
+                <label>Mast <input name="mast"></label>
+                <label>Tyres <input name="tyres"></label>
+                <label>Battery <input name="battery"></label>
+                <label>Fuel <input name="fuel"></label>
+                <label>Price <input name="price"></label>
+                <label>VAT
+                  <select name="vat"><option value="yes">Yes</option><option value="">No</option></select>
+                </label>
+                <label class="wide">Description <textarea name="description"></textarea></label>
+                <label class="wide">Bullets <textarea name="bullets" placeholder="Fully serviced | Finance available"></textarea></label>
+                <label class="wide">Image Main <input name="imageMain" placeholder="assets/uploads/trucks/.../main.jpg"></label>
+                <label class="wide">Gallery Images <textarea name="galleryImages" placeholder="assets/uploads/trucks/.../main.jpg | assets/uploads/trucks/.../side.jpg"></textarea></label>
+                <label>Sort Order <input name="sortOrder"></label>
+                <button class="action" type="submit">Save Truck</button>
+                <p class="status-line" id="formStatus"></p>
+              </form>
+            </div>
+          </div>
+        </section>
+
+        <section class="view" data-screen="ai">
+          <p class="eyebrow">Automation that delivers</p>
+          <h1>AI Content</h1>
+          <p class="lede">AI reply and content controls sit in the same operating shell.</p>
+        </section>
+
+        <section class="view" data-screen="settings">
+          <p class="eyebrow">Automation that delivers</p>
+          <h1>Settings</h1>
+          <p class="lede">System settings and links for AEGIS Sales OS.</p>
+        </section>
+      </main>
+    </div>
+
+    <script>
+      window.AEGIS_INITIAL_VIEW = "__AEGIS_INITIAL_VIEW__";
+      const rows = document.querySelector("#stockRows");
+      const form = document.querySelector("#stockForm");
+      const status = document.querySelector("#formStatus");
+      const updated = document.querySelector("#stockUpdated");
+      const search = document.querySelector("#stockSearch");
+      let stockItems = [];
+
+      function esc(value) {
+        return String(value || "").replace(/[&<>"]/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[char]));
+      }
+
+      function showView(name) {
+        document.querySelectorAll("[data-screen]").forEach((view) => view.classList.toggle("is-active", view.dataset.screen === name));
+        document.querySelectorAll("[data-view]").forEach((button) => button.classList.toggle("is-active", button.dataset.view === name));
+        if (name === "stock" && !stockItems.length) loadStock();
+      }
+
+      document.querySelectorAll("[data-view]").forEach((button) => {
+        button.addEventListener("click", () => showView(button.dataset.view));
+      });
+
+      function renderStock() {
+        const term = (search.value || "").toLowerCase();
+        const visible = stockItems.filter((item) => [item.id, item.brand, item.model, item.category, item.status].join(" ").toLowerCase().includes(term));
+        document.querySelector("#stockCount").textContent = stockItems.length;
+        if (!visible.length) {
+          rows.innerHTML = '<tr><td colspan="6">No matching trucks.</td></tr>';
+          return;
+        }
+        rows.innerHTML = visible.map((item) => `
+          <tr>
+            <td>${esc(item.id)}</td>
+            <td><strong>${esc([item.brand, item.model].filter(Boolean).join(" ") || item.model)}</strong></td>
+            <td><span class="pill">${esc(item.category)}</span></td>
+            <td><span class="pill">${esc(item.status || "in-stock")}</span></td>
+            <td>${esc(item.price || "POA")}</td>
+            <td><button type="button" class="action dark" onclick="editStock('${esc(item.id)}')">Edit</button></td>
+          </tr>
+        `).join("");
+      }
+
+      function loadStock() {
+        rows.innerHTML = '<tr><td colspan="6">Loading stock...</td></tr>';
+        google.script.run
+          .withSuccessHandler((result) => {
+            stockItems = result.items || [];
+            updated.textContent = "Last updated: " + new Date().toLocaleString();
+            renderStock();
+          })
+          .withFailureHandler((error) => {
+            rows.innerHTML = '<tr><td colspan="6">Could not load stock.</td></tr>';
+            status.textContent = error.message || String(error);
+          })
+          .getForkliftStockInventory();
+      }
+
+      function editStock(id) {
+        const item = stockItems.find((entry) => entry.id === id);
+        if (!item) return;
+        Object.entries(item).forEach(([key, value]) => {
+          if (!form.elements[key]) return;
+          form.elements[key].value = Array.isArray(value) ? value.join(" | ") : value;
+        });
+        form.elements.featured.value = item.featured ? "yes" : "";
+        form.elements.vat.value = item.vat ? "yes" : "";
+        status.textContent = "Editing " + id;
+      }
+
+      form.addEventListener("submit", (event) => {
+        event.preventDefault();
+        status.textContent = "Saving...";
+        const data = Object.fromEntries(new FormData(form).entries());
+        google.script.run
+          .withSuccessHandler((result) => {
+            status.textContent = result.ok ? "Saved to Forklift Stock." : result.error || "Save failed.";
+            if (result.ok) loadStock();
+          })
+          .withFailureHandler((error) => {
+            status.textContent = error.message || String(error);
+          })
+          .upsertForkliftStockItem(data);
+      });
+
+      search.addEventListener("input", renderStock);
+
+      showView(window.AEGIS_INITIAL_VIEW || "dashboard");
+    </script>
+  </body>
+</html>

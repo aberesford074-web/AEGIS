@@ -1,0 +1,7 @@
+{
+  "name": "aegis-gpt-proxy",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Private cloud proxy for the AEGIS Sales OS Custom GPT action.",
+  "license": "UNLICENSED"
+}

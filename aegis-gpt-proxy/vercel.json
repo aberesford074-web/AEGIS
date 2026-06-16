@@ -1,0 +1,117 @@
+{
+  "rewrites": [
+    {
+      "source": "/api/gmail/latest",
+      "destination": "/api/aegis-sales-os?action=listGmailThreads"
+    },
+    {
+      "source": "/api/gmail/thread",
+      "destination": "/api/aegis-sales-os?action=getGmailThread"
+    },
+    {
+      "source": "/api/gmail/sync",
+      "destination": "/api/aegis-sales-os?action=syncGmailEnquiries"
+    },
+    {
+      "source": "/api/gmail/status",
+      "destination": "/api/aegis-sales-os?action=getGmailSyncStatus"
+    },
+    {
+      "source": "/api/enquiries",
+      "destination": "/api/aegis-sales-os?action=getState&view=enquiries"
+    },
+    {
+      "source": "/api/database",
+      "destination": "/api/aegis-sales-os?action=getDatabaseContext"
+    },
+    {
+      "source": "/api/database/email-records",
+      "destination": "/api/aegis-sales-os?action=getDatabaseEmailRecords"
+    },
+    {
+      "source": "/api/database/save",
+      "destination": "/api/aegis-sales-os?action=saveDatabaseRows"
+    },
+    {
+      "source": "/api/campaign/email-context",
+      "destination": "/api/aegis-sales-os?action=getCampaignEmailContext"
+    },
+    {
+      "source": "/api/campaign/send-batch",
+      "destination": "/api/aegis-sales-os?action=sendCampaignEmailBatch"
+    },
+    {
+      "source": "/api/campaign/send-due",
+      "destination": "/api/aegis-sales-os?action=sendDueCampaignEmails"
+    },
+    {
+      "source": "/api/campaign/move-database",
+      "destination": "/api/aegis-sales-os?action=moveDatabaseRowsToCampaign"
+    },
+    {
+      "source": "/api/stock",
+      "destination": "/api/aegis-sales-os?action=getState&view=stock"
+    },
+    {
+      "source": "/api/integrations",
+      "destination": "/api/aegis-sales-os?action=getIntegrationStatus"
+    },
+    {
+      "source": "/api/marketplace/ebay/publish",
+      "destination": "/api/aegis-sales-os?action=publishEbayListing"
+    },
+    {
+      "source": "/api/linkedin/publish",
+      "destination": "/api/aegis-sales-os?action=publishLinkedInPost"
+    },
+    {
+      "source": "/api/linkedin/history",
+      "destination": "/api/aegis-sales-os?action=getLinkedInPostHistory"
+    },
+    {
+      "source": "/api/linkedin/history/import",
+      "destination": "/api/aegis-sales-os?action=importLinkedInPostHistory"
+    },
+    {
+      "source": "/api/linkedin/profile",
+      "destination": "/api/aegis-sales-os?action=getLinkedInProfile"
+    },
+    {
+      "source": "/api/industry-radar",
+      "destination": "/api/aegis-sales-os?action=getState&view=industry"
+    },
+    {
+      "source": "/api/industry-radar/scan",
+      "destination": "/api/aegis-sales-os?action=scanIndustryRadar"
+    },
+    {
+      "source": "/api/industry-radar/draft-posts",
+      "destination": "/api/aegis-sales-os?action=draftIndustryPosts"
+    },
+    {
+      "source": "/api/content-schedule",
+      "destination": "/api/aegis-sales-os?action=getState&view=content"
+    },
+    {
+      "source": "/api/content-schedule/save",
+      "destination": "/api/aegis-sales-os?action=saveContentItem"
+    },
+    {
+      "source": "/api/content-schedule/batch",
+      "destination": "/api/aegis-sales-os?action=saveContentScheduleItems"
+    },
+    {
+      "source": "/api/content-schedule/update",
+      "destination": "/api/aegis-sales-os?action=updateContentItem"
+    },
+    {
+      "source": "/api/content-schedule/schedule-from-radar",
+      "destination": "/api/aegis-sales-os?action=scheduleIndustryContent"
+    }
+  ],
+  "functions": {
+    "api/aegis-sales-os.js": {
+      "maxDuration": 30
+    }
+  }
+}

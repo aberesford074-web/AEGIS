@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Forklift Stock | AEGIS Sales OS</title>
+    <meta name="description" content="AEGIS Sales OS stock workflow for Forklift Pro Solutions truck details, media uploads, and website inventory sync." />
+    <link rel="stylesheet" href="../../styles.css" />
+  </head>
+  <body class="subpage-body sales-os-body">
+    <header class="page-header-nav">
+      <a class="brand" href="../../index.html"><img src="../../pictures/logo.jpeg" alt="AEGIS Automations" /></a>
+      <nav class="page-nav">
+        <a href="../../index.html">Home</a>
+        <a class="is-active" href="index.html">Sales OS</a>
+        <a href="../../products/index.html">Systems</a>
+        <a href="../../industrial/index.html">Industrial</a>
+        <a href="../../about/index.html">About</a>
+      </nav>
+      <a class="header-cta" href="../../contact/index.html">Contact / Book a call <span aria-hidden="true">-&gt;</span></a>
+    </header>
+
+    <main class="page-shell sales-os-page">
+      <section class="page-hero compact-hero sales-os-hero">
+        <p class="eyebrow">AEGIS Sales OS</p>
+        <h1>Forklift stock control for the Forklift Pro website.</h1>
+        <p>Use the existing AEGIS Google Sheets CRM as the operating layer for truck details, stock status, media paths, and website inventory updates.</p>
+      </section>
+
+      <section class="sales-os-grid">
+        <article class="sales-os-panel sales-os-panel-wide">
+          <p class="eyebrow eyebrow-dark">Control Centre</p>
+          <h2>Add, edit, and publish truck stock</h2>
+          <p>The stock manager is the working screen for Forklift Pro Solutions. Use it to add a truck, upload the main photo, update the local website inventory, and keep the Google Sheet stock table aligned.</p>
+          <div class="sales-os-actions">
+            <a class="button button-light" href="http://127.0.0.1:4195/">Open stock manager <span aria-hidden="true">-&gt;</span></a>
+            <a class="button button-outline" href="https://docs.google.com/spreadsheets/d/1gdL5hFBBuuAu_J_5rspcL-OfxC6DCj-5v7snztSbzrc/edit#gid=2026052201" target="_blank" rel="noreferrer">Open stock sheet <span aria-hidden="true">-&gt;</span></a>
+          </div>
+        </article>
+
+        <article class="sales-os-panel">
+          <p class="eyebrow eyebrow-dark">Stock Sheet</p>
+          <h2>Forklift Stock</h2>
+          <p>Truck details live in the same AEGIS Google Sheet system as the CRM. The live sheet now has `Forklift Stock` and `Forklift Media` tabs.</p>
+          <ul>
+            <li>Model, brand, type, power, capacity, lift height, price</li>
+            <li>Status: in-stock, sold, reserved, draft</li>
+            <li>Image paths for main photos and galleries</li>
+            <li>Public website inventory JSON export</li>
+          </ul>
+        </article>
+
+        <article class="sales-os-panel">
+          <p class="eyebrow eyebrow-dark">Media Upload</p>
+          <h2>Truck Photos</h2>
+          <p>Photos upload into the Forklift Pro website media folder. The stock manager can attach the uploaded path to the truck and update the website inventory.</p>
+          <a class="button button-light" href="http://127.0.0.1:4195/">Open media upload <span aria-hidden="true">-&gt;</span></a>
+        </article>
+
+        <article class="sales-os-panel sales-os-panel-wide">
+          <p class="eyebrow eyebrow-dark">Workflow</p>
+          <h2>How updates should work</h2>
+          <div class="sales-os-steps">
+            <span><strong>1</strong> Add or edit truck row in Google Sheets</span>
+            <span><strong>2</strong> Upload photos through AEGIS Sales OS</span>
+            <span><strong>3</strong> Paste media paths into the Sheet</span>
+            <span><strong>4</strong> Sync stock into the Forklift Pro website</span>
+          </div>
+        </article>
+
+        <article class="sales-os-panel">
+          <p class="eyebrow eyebrow-dark">Apps Script Actions</p>
+          <h2>Connected Actions</h2>
+          <code>?action=stockManager</code>
+          <code>?action=setupForkliftStock</code>
+          <code>?action=forkliftStock</code>
+          <code>POST action=forkliftStockItem</code>
+        </article>
+
+        <article class="sales-os-panel">
+          <p class="eyebrow eyebrow-dark">Local Sync</p>
+          <h2>Website Export</h2>
+          <p>Run the sync script from the AEGIS folder when the Sheet is ready.</p>
+          <code>node tools/sync-forklift-stock-from-sheet.mjs &lt;csv-url&gt;</code>
+        </article>
+      </section>
+    </main>
+  </body>
+</html>

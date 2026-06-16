@@ -1,0 +1,17 @@
+# AEGIS GPT Proxy
+
+Private Vercel function used by the AEGIS Sales OS Custom GPT.
+
+ChatGPT authenticates to this proxy with a saved bearer token. The proxy injects the real AEGIS Sales OS web app access key server-side, then forwards the action to the Google Apps Script app.
+
+Required Vercel environment variables:
+
+- `AEGIS_WEB_APP_URL`
+- `AEGIS_WEB_ACCESS_KEY`
+- `AEGIS_GPT_PROXY_TOKEN`
+
+The GPT action should call:
+
+`POST /api/aegis-sales-os`
+
+Read actions use `action: "getState"`. Write actions require `confirmed: true`.
