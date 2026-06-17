@@ -55,6 +55,7 @@ const files = [
   'openapi.yaml',
   'openapi-gpt.yaml',
   'api/aegis-sales-os.js',
+  'api/ebay/account-deletion.js',
   'api/linkedin/callback.js'
 ].map(file => ({
   file,

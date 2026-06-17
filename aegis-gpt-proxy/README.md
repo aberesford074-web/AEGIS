@@ -9,9 +9,14 @@ Required Vercel environment variables:
 - `AEGIS_WEB_APP_URL`
 - `AEGIS_WEB_ACCESS_KEY`
 - `AEGIS_GPT_PROXY_TOKEN`
+- `EBAY_ACCOUNT_DELETION_VERIFICATION_TOKEN`
 
 The GPT action should call:
 
 `POST /api/aegis-sales-os`
 
 Read actions use `action: "getState"`. Write actions require `confirmed: true`.
+
+eBay marketplace account deletion notifications use:
+
+`GET/POST /api/ebay/account-deletion`
