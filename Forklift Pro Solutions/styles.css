@@ -437,6 +437,380 @@ body.tmd-used-page .site-footer a:hover {
   }
 }
 
+/* Final TMD override for the pallet truck page. */
+body.tmd-pallet-page .site-header,
+body.tmd-pallet-page .pallet-page,
+body.tmd-pallet-page .site-footer {
+  background: #050606;
+}
+
+body.tmd-pallet-page .main-nav a::after,
+body.tmd-pallet-page .main-nav a:hover::after,
+body.tmd-pallet-page .main-nav a.active::after,
+body.tmd-pallet-page .range-label::before,
+body.tmd-pallet-page .inventory-pagination button:hover,
+body.tmd-pallet-page .inventory-pagination button.active,
+body.tmd-pallet-page .model-grid article:hover a,
+body.tmd-pallet-page .modal-thumbs button.active {
+  background: #f28a12;
+  box-shadow: none;
+}
+
+body.tmd-pallet-page .quote-link,
+body.tmd-pallet-page .model-heading .button.ghost,
+body.tmd-pallet-page .pallet-actions .button.light {
+  border-color: rgba(255, 255, 255, 0.34);
+  background: transparent;
+  color: #fff;
+}
+
+body.tmd-pallet-page .quote-link:hover,
+body.tmd-pallet-page .model-grid article:hover,
+body.tmd-pallet-page .model-grid article:focus-visible,
+body.tmd-pallet-page .inventory-pagination button:hover,
+body.tmd-pallet-page .inventory-pagination button.active,
+body.tmd-pallet-page .modal-thumbs button.active {
+  border-color: #f28a12;
+}
+
+body.tmd-pallet-page .pallet-hero {
+  min-height: clamp(620px, 45vw, 760px);
+  padding: clamp(104px, 7vw, 138px) clamp(38px, 4.6vw, 92px) clamp(54px, 5vw, 82px);
+  background:
+    linear-gradient(90deg, rgba(0, 0, 0, 0.94) 0%, rgba(0, 0, 0, 0.78) 36%, rgba(0, 0, 0, 0.36) 62%, rgba(0, 0, 0, 0.08) 100%),
+    linear-gradient(180deg, rgba(0, 0, 0, 0.04), #050606 100%),
+    url("assets/pallet-page-hero-reference.jpeg") right center / cover no-repeat;
+  color: #fff;
+}
+
+body.tmd-pallet-page .pallet-hero-copy {
+  max-width: 700px;
+}
+
+body.tmd-pallet-page .breadcrumb,
+body.tmd-pallet-page .product-eyebrow,
+body.tmd-pallet-page .range-label,
+body.tmd-pallet-page .model-grid dt,
+body.tmd-pallet-page .modal-specs dt,
+body.tmd-pallet-page .modal-tags span,
+body.tmd-pallet-page .stock-badge,
+body.tmd-pallet-page .site-footer h3 {
+  font-family: "Rajdhani", "Montserrat", Arial, Helvetica, sans-serif;
+  font-weight: 900;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+body.tmd-pallet-page .breadcrumb,
+body.tmd-pallet-page .product-eyebrow,
+body.tmd-pallet-page .range-label,
+body.tmd-pallet-page .model-grid dt,
+body.tmd-pallet-page .modal-specs div::before,
+body.tmd-pallet-page .modal-specs dt,
+body.tmd-pallet-page .modal-price strong,
+body.tmd-pallet-page .site-footer h3,
+body.tmd-pallet-page .site-footer a:hover {
+  color: #f28a12;
+}
+
+body.tmd-pallet-page .breadcrumb span {
+  color: rgba(255, 255, 255, 0.44);
+}
+
+body.tmd-pallet-page .pallet-hero h1,
+body.tmd-pallet-page .model-heading h2,
+body.tmd-pallet-page .model-grid h3,
+body.tmd-pallet-page .feature-copy h2,
+body.tmd-pallet-page .tough-band h2,
+body.tmd-pallet-page .modal-info h2,
+body.tmd-pallet-page .modal-brand {
+  color: #fff;
+  font-family: "Big Shoulders Display", "Anton", Impact, "Arial Narrow", sans-serif;
+  font-weight: 900;
+  letter-spacing: 0.045em;
+  line-height: 0.9;
+  text-transform: uppercase;
+}
+
+body.tmd-pallet-page .pallet-hero h1 {
+  max-width: 720px;
+  font-size: clamp(72px, 7.4vw, 128px);
+}
+
+body.tmd-pallet-page .pallet-hero h1 span,
+body.tmd-pallet-page .feature-copy h2 span,
+body.tmd-pallet-page .tough-band h2 span {
+  color: #fff;
+}
+
+body.tmd-pallet-page .pallet-hero h1::after,
+body.tmd-pallet-page .model-heading h2::after,
+body.tmd-pallet-page .feature-copy h2::after,
+body.tmd-pallet-page .tough-band h2::after {
+  color: #f28a12;
+  content: ".";
+}
+
+body.tmd-pallet-page .pallet-hero-copy > p:not(.product-eyebrow),
+body.tmd-pallet-page .pallet-benefits p,
+body.tmd-pallet-page .model-heading > p,
+body.tmd-pallet-page .model-grid p,
+body.tmd-pallet-page .feature-copy > p:not(.product-eyebrow),
+body.tmd-pallet-page .feature-list p,
+body.tmd-pallet-page .tough-band p,
+body.tmd-pallet-page .modal-service-strip p,
+body.tmd-pallet-page .modal-description,
+body.tmd-pallet-page .site-footer p,
+body.tmd-pallet-page .site-footer a,
+body.tmd-pallet-page .site-footer span,
+body.tmd-pallet-page .copyright {
+  color: rgba(255, 255, 255, 0.72);
+  font-family: "Montserrat", Arial, Helvetica, sans-serif;
+  font-weight: 500;
+}
+
+body.tmd-pallet-page .pallet-hero-copy > p:not(.product-eyebrow) {
+  color: rgba(255, 255, 255, 0.76);
+  font-weight: 600;
+}
+
+body.tmd-pallet-page .pallet-benefits {
+  width: min(960px, 100%);
+  gap: 0;
+  margin-top: 34px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: rgba(0, 0, 0, 0.32);
+}
+
+body.tmd-pallet-page .pallet-benefits article {
+  padding: 22px 20px;
+  border-left: 1px solid rgba(255, 255, 255, 0.14);
+}
+
+body.tmd-pallet-page .pallet-benefits article:first-child {
+  border-left: 0;
+}
+
+body.tmd-pallet-page .pallet-benefits strong,
+body.tmd-pallet-page .feature-list strong,
+body.tmd-pallet-page .modal-service-strip strong,
+body.tmd-pallet-page .modal-specs dd,
+body.tmd-pallet-page .modal-type {
+  color: #fff;
+}
+
+body.tmd-pallet-page .mini-icon {
+  color: #fff;
+}
+
+body.tmd-pallet-page .pallet-actions .button.primary,
+body.tmd-pallet-page .model-grid a,
+body.tmd-pallet-page .tough-band .button.primary,
+body.tmd-pallet-page .modal-actions .light,
+body.tmd-pallet-page .modal-actions .dark,
+body.tmd-pallet-page .modal-actions .whatsapp {
+  border-color: #fff;
+  background: #fff;
+  color: #050606;
+}
+
+body.tmd-pallet-page .model-section {
+  padding: clamp(48px, 5vw, 82px) clamp(38px, 4.6vw, 92px);
+  background: linear-gradient(180deg, #050606, #030506);
+  color: #fff;
+}
+
+body.tmd-pallet-page .model-heading {
+  align-items: end;
+  margin-bottom: 34px;
+}
+
+body.tmd-pallet-page .range-label {
+  color: #f28a12;
+}
+
+body.tmd-pallet-page .model-grid {
+  gap: 22px;
+}
+
+body.tmd-pallet-page .model-grid article {
+  display: flex;
+  min-height: 100%;
+  flex-direction: column;
+  padding: 16px;
+  border-radius: 0;
+  border-color: rgba(255, 255, 255, 0.14);
+  background: #070809;
+  box-shadow: none;
+}
+
+body.tmd-pallet-page .model-grid img {
+  aspect-ratio: 1.15;
+  padding: 0;
+  object-fit: contain;
+  object-position: center;
+  filter: contrast(1.06) saturate(0.98);
+}
+
+body.tmd-pallet-page .model-grid h3 {
+  margin-top: 18px;
+  font-size: clamp(28px, 2.1vw, 38px);
+}
+
+body.tmd-pallet-page .model-grid p {
+  min-height: 34px;
+  margin-bottom: 16px;
+}
+
+body.tmd-pallet-page .model-grid dl {
+  margin-top: auto;
+  padding-top: 4px;
+}
+
+body.tmd-pallet-page .model-grid a {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 52px;
+  margin-top: 2px;
+  padding: 0 18px;
+  font-family: "Rajdhani", "Montserrat", Arial, Helvetica, sans-serif;
+  letter-spacing: 0.18em;
+}
+
+body.tmd-pallet-page .model-grid article:hover a {
+  color: #050606;
+}
+
+body.tmd-pallet-page .feature-section {
+  padding: clamp(54px, 5vw, 86px) clamp(38px, 4.6vw, 92px);
+  background: #050606;
+  color: #fff;
+}
+
+body.tmd-pallet-page .feature-art {
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: #070809;
+}
+
+body.tmd-pallet-page .feature-art img {
+  width: 100%;
+  transform: none;
+  filter: contrast(1.08) saturate(0.96);
+}
+
+body.tmd-pallet-page .feature-list article {
+  padding: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: #070809;
+}
+
+body.tmd-pallet-page .tough-band {
+  padding: clamp(54px, 5vw, 82px) clamp(38px, 4.6vw, 92px);
+  background:
+    linear-gradient(90deg, rgba(0, 0, 0, 0.94), rgba(0, 0, 0, 0.7) 54%, rgba(0, 0, 0, 0.28)),
+    url("assets/pallet-features-strip.jpeg") right center / cover no-repeat;
+}
+
+body.tmd-pallet-page .inventory-pagination button,
+body.tmd-pallet-page .inventory-pagination select {
+  border-radius: 0;
+  background: #070809;
+  color: #fff;
+}
+
+body.tmd-pallet-page .inventory-pagination button:hover,
+body.tmd-pallet-page .inventory-pagination button.active {
+  color: #050606;
+}
+
+body.tmd-pallet-page .product-modal-card {
+  border-radius: 0;
+  border-color: rgba(255, 255, 255, 0.14);
+  background: #070809;
+  color: #fff;
+  box-shadow: 0 34px 90px rgba(0, 0, 0, 0.58);
+}
+
+body.tmd-pallet-page .modal-close,
+body.tmd-pallet-page .gallery-arrow {
+  border-radius: 0;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  background: rgba(5, 6, 6, 0.86);
+  color: #fff;
+}
+
+body.tmd-pallet-page .stock-badge,
+body.tmd-pallet-page .modal-tags span {
+  border-radius: 0;
+  background: rgba(0, 0, 0, 0.72);
+  color: #fff;
+}
+
+body.tmd-pallet-page .modal-main-image,
+body.tmd-pallet-page .modal-thumbs button {
+  border-radius: 0;
+  border-color: rgba(255, 255, 255, 0.12);
+  background: #050606;
+}
+
+body.tmd-pallet-page .modal-service-strip,
+body.tmd-pallet-page .modal-service-strip article,
+body.tmd-pallet-page .modal-tags,
+body.tmd-pallet-page .modal-description {
+  border-color: rgba(255, 255, 255, 0.14);
+}
+
+body.tmd-pallet-page .modal-tags span + span {
+  background: transparent;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+body.tmd-pallet-page .modal-price span {
+  color: rgba(255, 255, 255, 0.62);
+}
+
+@media (max-width: 980px) {
+  body.tmd-pallet-page .pallet-hero {
+    min-height: 590px;
+    background:
+      linear-gradient(90deg, rgba(0, 0, 0, 0.94), rgba(0, 0, 0, 0.58)),
+      url("assets/pallet-page-hero-reference.jpeg") center / cover no-repeat;
+  }
+
+  body.tmd-pallet-page .model-heading {
+    grid-template-columns: 1fr;
+  }
+
+  body.tmd-pallet-page .pallet-benefits article:nth-child(3) {
+    border-left: 0;
+  }
+}
+
+@media (max-width: 700px) {
+  body.tmd-pallet-page .pallet-hero {
+    padding-inline: 24px;
+  }
+
+  body.tmd-pallet-page .pallet-hero h1 {
+    font-size: clamp(58px, 17vw, 82px);
+  }
+
+  body.tmd-pallet-page .pallet-benefits article,
+  body.tmd-pallet-page .pallet-benefits article:nth-child(3) {
+    border-left: 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.14);
+  }
+
+  body.tmd-pallet-page .pallet-benefits article:first-child {
+    border-top: 0;
+  }
+
+  body.tmd-pallet-page .model-grid img {
+    aspect-ratio: 1.08;
+  }
+}
+
 /* AEGIS AllTerrain AT30 launch page */
 .at30-body {
   background: #050505;
