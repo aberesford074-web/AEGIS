@@ -20,3 +20,7 @@ Read actions use `action: "getState"`. Write actions require `confirmed: true`.
 eBay marketplace account deletion notifications use:
 
 `GET/POST /api/ebay/account-deletion`
+
+eBay OAuth sign-in returns to:
+
+`GET /api/ebay/oauth/callback`
