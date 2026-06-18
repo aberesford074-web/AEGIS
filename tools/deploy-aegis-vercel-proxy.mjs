@@ -57,6 +57,7 @@ const files = [
   'api/aegis-sales-os.js',
   'api/ebay/account-deletion.js',
   'api/ebay/oauth/callback.js',
+  'api/ebay/setup-config.js',
   'api/linkedin/callback.js'
 ].map(file => ({
   file,
