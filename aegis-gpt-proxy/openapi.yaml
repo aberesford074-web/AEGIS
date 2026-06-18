@@ -154,6 +154,10 @@ paths:
                     - exportMarketplaceFeed
                     - publishMarketplaceListing
                     - publishEbayListing
+                    - saveEbayAppConfig
+                    - connectEbay
+                    - saveEbayConfig
+                    - saveEbayCredentials
                     - publishLinkedInPost
                     - createStockListing
                     - createStockItem
@@ -215,6 +219,7 @@ paths:
                     - publishEbayStock
                     - publishEbayMarketplaceListing
                     - listOnEbay
+                    - saveEbayCredentials
                     - postToLinkedIn
                     - publishLinkedInContent
                     - publishLinkedInStockPost

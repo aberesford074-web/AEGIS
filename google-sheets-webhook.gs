@@ -5007,6 +5007,8 @@ function doPost(event) {
       result = webAppGetLinkedInProfile();
     } else if (action === 'saveLinkedInAppConfig') {
       result = webAppSaveLinkedInAppConfig(payload.config || payload.linkedin || payload);
+    } else if (action === 'saveEbayAppConfig') {
+      result = webAppSaveEbayAppConfig(payload.config || payload.ebay || payload);
     } else if (action === 'getLinkedInAuthorizationUrl') {
       result = webAppGetLinkedInAuthorizationUrl();
     } else if (action === 'getIntegrationStatus') {
@@ -7164,6 +7166,71 @@ function getGmailIntegrationStatus_() {
   }
 
   return status;
+}
+
+function webAppSaveEbayAppConfig(payload) {
+  const values = payload || {};
+  const props = PropertiesService.getScriptProperties();
+  const existing = {
+    clientId: clean_(props.getProperty('EBAY_CLIENT_ID')),
+    clientSecret: clean_(props.getProperty('EBAY_CLIENT_SECRET')),
+    refreshToken: clean_(props.getProperty('EBAY_REFRESH_TOKEN')),
+    merchantLocationKey: clean_(props.getProperty('EBAY_MERCHANT_LOCATION_KEY')),
+    paymentPolicyId: clean_(props.getProperty('EBAY_PAYMENT_POLICY_ID')),
+    fulfillmentPolicyId: clean_(props.getProperty('EBAY_FULFILLMENT_POLICY_ID')),
+    returnPolicyId: clean_(props.getProperty('EBAY_RETURN_POLICY_ID')),
+    categoryId: clean_(props.getProperty('EBAY_CATEGORY_ID')),
+    marketplaceId: clean_(props.getProperty('EBAY_MARKETPLACE_ID')),
+    environment: clean_(props.getProperty('EBAY_ENVIRONMENT')),
+    scope: clean_(props.getProperty('EBAY_OAUTH_SCOPE'))
+  };
+  const next = {
+    clientId: clean_(values.clientId || values.appId || values.appID || values.id) || existing.clientId,
+    clientSecret: clean_(values.clientSecret || values.certId || values.certID || values.secret) || existing.clientSecret,
+    refreshToken: clean_(values.refreshToken || values.refresh_token || values.token) || existing.refreshToken,
+    merchantLocationKey: clean_(values.merchantLocationKey || values.locationKey || values.location || values.inventoryLocationKey) || existing.merchantLocationKey,
+    paymentPolicyId: clean_(values.paymentPolicyId || values.paymentPolicy || values.payment) || existing.paymentPolicyId,
+    fulfillmentPolicyId: clean_(values.fulfillmentPolicyId || values.shippingPolicyId || values.fulfillmentPolicy || values.shipping) || existing.fulfillmentPolicyId,
+    returnPolicyId: clean_(values.returnPolicyId || values.returnPolicy || values.returns) || existing.returnPolicyId,
+    categoryId: clean_(values.categoryId || values.category || values.ebayCategoryId) || existing.categoryId,
+    marketplaceId: clean_(values.marketplaceId || values.marketplace) || existing.marketplaceId || 'EBAY_GB',
+    environment: clean_(values.environment || values.env) || existing.environment || 'production',
+    scope: clean_(values.scope || values.oauthScope) || existing.scope || 'https://api.ebay.com/oauth/api_scope/sell.inventory'
+  };
+
+  if (!next.clientId || !next.clientSecret) {
+    throw new Error('eBay Client ID/App ID and Cert ID/Client Secret are required.');
+  }
+
+  const writeValues = {
+    EBAY_CLIENT_ID: next.clientId,
+    EBAY_CLIENT_SECRET: next.clientSecret,
+    EBAY_MARKETPLACE_ID: next.marketplaceId,
+    EBAY_ENVIRONMENT: next.environment.toLowerCase() === 'sandbox' ? 'sandbox' : 'production',
+    EBAY_OAUTH_SCOPE: next.scope
+  };
+
+  if (next.refreshToken) writeValues.EBAY_REFRESH_TOKEN = next.refreshToken;
+  if (next.merchantLocationKey) writeValues.EBAY_MERCHANT_LOCATION_KEY = next.merchantLocationKey;
+  if (next.paymentPolicyId) writeValues.EBAY_PAYMENT_POLICY_ID = next.paymentPolicyId;
+  if (next.fulfillmentPolicyId) writeValues.EBAY_FULFILLMENT_POLICY_ID = next.fulfillmentPolicyId;
+  if (next.returnPolicyId) writeValues.EBAY_RETURN_POLICY_ID = next.returnPolicyId;
+  if (next.categoryId) writeValues.EBAY_CATEGORY_ID = next.categoryId;
+
+  props.setProperties(writeValues);
+  const config = getEbayConfig_();
+
+  return {
+    ok: true,
+    ebay: {
+      configured: !config.missing.length,
+      missing: config.missing,
+      marketplaceId: config.marketplaceId,
+      environment: config.environment,
+      hasRefreshToken: Boolean(config.refreshToken),
+      hasPolicyIds: Boolean(config.merchantLocationKey && config.paymentPolicyId && config.fulfillmentPolicyId && config.returnPolicyId)
+    }
+  };
 }
 
 function webAppSaveLinkedInAppConfig(payload) {

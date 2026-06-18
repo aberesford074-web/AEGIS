@@ -79,6 +79,10 @@ paths:
                     - updateContentItem
                     - scheduleIndustryContent
                     - publishEbayListing
+                    - saveEbayAppConfig
+                    - connectEbay
+                    - saveEbayConfig
+                    - saveEbayCredentials
                     - buildMarketplaceListingPackage
                     - exportMarketplaceFeed
                 confirmed:
