@@ -84,6 +84,13 @@ paths:
                   - listEbayListings
                   - importEbayListings
                   - syncEbayListings
+                  - getEbayMessages
+                  - getEbayConversations
+                  - getEbayConversation
+                  - createEbayReplyDraft
+                  - sendEbayMessage
+                  - getEbayOrders
+                  - getEbayAnalytics
                   - saveEbayAppConfig
                     - connectEbay
                     - saveEbayConfig

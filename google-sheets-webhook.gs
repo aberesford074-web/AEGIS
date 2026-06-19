@@ -4997,6 +4997,18 @@ function doPost(event) {
       result = webAppGetEbayListings(payload.options || payload);
     } else if (action === 'importEbayListings') {
       result = webAppImportEbayListings(payload.options || payload);
+    } else if (action === 'getEbayConversations') {
+      result = webAppGetEbayConversations(payload.options || payload);
+    } else if (action === 'getEbayConversation') {
+      result = webAppGetEbayConversation(payload.conversationId || payload.id, payload.options || payload);
+    } else if (action === 'createEbayReplyDraft') {
+      result = webAppCreateEbayReplyDraft(payload.message || payload.reply || payload);
+    } else if (action === 'sendEbayMessage') {
+      result = webAppSendEbayMessage(payload.message || payload.reply || payload);
+    } else if (action === 'getEbayOrders') {
+      result = webAppGetEbayOrders(payload.options || payload);
+    } else if (action === 'getEbayAnalytics') {
+      result = webAppGetEbayAnalytics(payload.options || payload);
     } else if (action === 'publishMarketplaceListing') {
       result = webAppPublishMarketplaceListing(payload.item || payload.listing || payload);
     } else if (action === 'publishEbayListing') {
@@ -6402,6 +6414,199 @@ function buildEbayListingSummary_(offer, config) {
       : '',
     url: listingId ? `https://www.ebay.co.uk/itm/${listingId}` : '',
     raw: offer
+  };
+}
+
+function webAppGetEbayConversations(options) {
+  const config = getEbayConfig_();
+  if (config.missing.length) {
+    throw new Error('eBay is not configured yet. Missing: ' + config.missing.join(', '));
+  }
+
+  const limit = Math.max(1, Math.min(100, Number(options && options.limit) || 25));
+  const offset = Math.max(0, Number(options && options.offset) || 0);
+  const path = `/sell/communication/v1/conversation?limit=${limit}&offset=${offset}`;
+  const response = ebayApiFetch_('GET', path, config, null);
+  const conversations = (response.conversations || response.conversation || []).map(normaliseEbayConversation_);
+
+  return {
+    ok: true,
+    source: 'ebay',
+    total: Number(response.total) || conversations.length,
+    conversations,
+    note: 'Reading eBay messages requires the seller communication permission on the connected eBay token.'
+  };
+}
+
+function webAppGetEbayConversation(conversationId, options) {
+  const id = clean_(conversationId);
+  if (!id) throw new Error('Choose an eBay conversation ID first.');
+
+  const config = getEbayConfig_();
+  if (config.missing.length) {
+    throw new Error('eBay is not configured yet. Missing: ' + config.missing.join(', '));
+  }
+
+  const response = ebayApiFetch_('GET', `/sell/communication/v1/conversation/${encodeURIComponent(id)}`, config, null);
+  return {
+    ok: true,
+    source: 'ebay',
+    conversationId: id,
+    conversation: normaliseEbayConversation_(response),
+    raw: response,
+    note: 'Use createEbayReplyDraft before sendEbayMessage. Sending always requires confirmed=true at the GPT proxy.'
+  };
+}
+
+function webAppCreateEbayReplyDraft(payload) {
+  const values = payload || {};
+  const buyerName = clean_(values.buyerName || values.sender || values.from) || 'there';
+  const listingTitle = clean_(values.listingTitle || values.title || values.itemTitle);
+  const question = clean_(values.question || values.body || values.messageText || values.message);
+  const truckId = clean_(values.truckId || values.stockId || values.sku);
+  let stock = null;
+  if (truckId) {
+    try {
+      stock = findStockItem_(truckId).item;
+    } catch (_error) {
+      stock = null;
+    }
+  }
+
+  const draft = [
+    `Hi ${buyerName},`,
+    '',
+    question ? `Thanks for your message about ${listingTitle || (stock && [stock.brand, stock.model].filter(Boolean).join(' ')) || 'the machine'}.` : 'Thanks for your message.',
+    stock ? `It is currently showing as ${stockStatusLabel_(stock.status || 'in-stock')}.` : '',
+    stock && stock.price ? `The listed price is ${marketplacePriceText_(stock)}.` : '',
+    'Collection or transport can be arranged. If you send your postcode, we can quote delivery and confirm availability.',
+    '',
+    'Kind regards,',
+    'AEGIS / Trade Machinery Direct'
+  ].filter(line => line !== '').join('\n');
+
+  return {
+    ok: true,
+    source: 'ebay',
+    conversationId: clean_(values.conversationId),
+    itemId: clean_(values.itemId || values.listingId),
+    truckId,
+    draft,
+    note: 'Draft only. To send, call sendEbayMessage with confirmed=true after the user approves the exact text.'
+  };
+}
+
+function webAppSendEbayMessage(payload) {
+  const values = payload || {};
+  const config = getEbayConfig_();
+  if (config.missing.length) {
+    throw new Error('eBay is not configured yet. Missing: ' + config.missing.join(', '));
+  }
+
+  const conversationId = clean_(values.conversationId);
+  const text = clean_(values.text || values.body || values.messageText || values.message);
+  if (!conversationId) throw new Error('Choose an eBay conversation ID before sending a reply.');
+  if (!text) throw new Error('Add the approved reply text before sending to eBay.');
+
+  const response = ebayApiFetch_('POST', '/sell/communication/v1/send_message', config, {
+    conversationId,
+    message: {
+      body: text
+    }
+  });
+
+  return {
+    ok: true,
+    source: 'ebay',
+    conversationId,
+    sent: true,
+    response
+  };
+}
+
+function webAppGetEbayOrders(options) {
+  const config = getEbayConfig_();
+  if (config.missing.length) {
+    throw new Error('eBay is not configured yet. Missing: ' + config.missing.join(', '));
+  }
+
+  const limit = Math.max(1, Math.min(100, Number(options && options.limit) || 25));
+  const offset = Math.max(0, Number(options && options.offset) || 0);
+  const path = `/sell/fulfillment/v1/order?limit=${limit}&offset=${offset}`;
+  const response = ebayApiFetch_('GET', path, config, null);
+  const orders = (response.orders || []).map(normaliseEbayOrder_);
+
+  return {
+    ok: true,
+    source: 'ebay',
+    total: Number(response.total) || orders.length,
+    orders,
+    note: 'Orders/sales require the eBay sell.fulfillment permission on the connected token.'
+  };
+}
+
+function webAppGetEbayAnalytics(options) {
+  const config = getEbayConfig_();
+  if (config.missing.length) {
+    throw new Error('eBay is not configured yet. Missing: ' + config.missing.join(', '));
+  }
+
+  const query = clean_(options && options.query);
+  const path = query
+    ? `/sell/analytics/v1/traffic_report?${query.replace(/^\?/, '')}`
+    : '/sell/analytics/v1/traffic_report';
+  const response = ebayApiFetch_('GET', path, config, null);
+
+  return {
+    ok: true,
+    source: 'ebay',
+    analytics: response,
+    note: 'Traffic/analytics require the eBay sell.analytics.readonly permission. Pass a query string for specific report dimensions, metrics, and date filters.'
+  };
+}
+
+function normaliseEbayConversation_(conversation) {
+  const c = conversation || {};
+  const messages = c.messages || c.message || [];
+  return {
+    conversationId: clean_(c.conversationId || c.id),
+    itemId: clean_(c.itemId || c.listingId),
+    subject: clean_(c.subject),
+    status: clean_(c.status),
+    lastMessageDate: clean_(c.lastMessageDate || c.lastUpdatedDate || c.creationDate),
+    buyer: clean_(c.buyer && (c.buyer.username || c.buyer.userId) || c.buyerUsername),
+    messages: (Array.isArray(messages) ? messages : [messages]).filter(Boolean).map(message => ({
+      messageId: clean_(message.messageId || message.id),
+      sender: clean_(message.sender && (message.sender.username || message.sender.userId) || message.sender),
+      recipient: clean_(message.recipient && (message.recipient.username || message.recipient.userId) || message.recipient),
+      text: clean_(message.body || message.text || message.content),
+      createdAt: clean_(message.creationDate || message.createdAt)
+    })),
+    raw: c
+  };
+}
+
+function normaliseEbayOrder_(order) {
+  const o = order || {};
+  const lineItems = o.lineItems || [];
+  return {
+    orderId: clean_(o.orderId),
+    creationDate: clean_(o.creationDate),
+    lastModifiedDate: clean_(o.lastModifiedDate),
+    orderFulfillmentStatus: clean_(o.orderFulfillmentStatus),
+    orderPaymentStatus: clean_(o.orderPaymentStatus),
+    buyerUsername: clean_(o.buyer && o.buyer.username),
+    total: o.pricingSummary && o.pricingSummary.total
+      ? `${o.pricingSummary.total.value || ''} ${o.pricingSummary.total.currency || ''}`.trim()
+      : '',
+    lineItems: lineItems.map(item => ({
+      lineItemId: clean_(item.lineItemId),
+      sku: clean_(item.sku),
+      title: clean_(item.title),
+      quantity: item.quantity || '',
+      itemId: clean_(item.legacyItemId || item.itemId)
+    })),
+    raw: o
   };
 }
 

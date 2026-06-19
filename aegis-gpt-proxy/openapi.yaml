@@ -152,6 +152,13 @@ paths:
                     - listEbayListings
                     - importEbayListings
                     - syncEbayListings
+                    - getEbayMessages
+                    - getEbayConversations
+                    - getEbayConversation
+                    - createEbayReplyDraft
+                    - sendEbayMessage
+                    - getEbayOrders
+                    - getEbayAnalytics
                     - buildMarketplaceListingPackage
                     - prepareMarketplaceListing
                     - prepareEbayListing
