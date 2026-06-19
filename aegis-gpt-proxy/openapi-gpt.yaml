@@ -78,8 +78,13 @@ paths:
                     - saveContentScheduleItems
                     - updateContentItem
                     - scheduleIndustryContent
-                    - publishEbayListing
-                    - saveEbayAppConfig
+                  - publishEbayListing
+                  - getEbayListings
+                  - readEbayListings
+                  - listEbayListings
+                  - importEbayListings
+                  - syncEbayListings
+                  - saveEbayAppConfig
                     - connectEbay
                     - saveEbayConfig
                     - saveEbayCredentials

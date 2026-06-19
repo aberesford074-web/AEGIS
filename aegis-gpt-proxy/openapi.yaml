@@ -147,6 +147,11 @@ paths:
                     - sendCampaignEmailBatch
                     - sendDueCampaignEmails
                     - saveMarketplaceItem
+                    - getEbayListings
+                    - readEbayListings
+                    - listEbayListings
+                    - importEbayListings
+                    - syncEbayListings
                     - buildMarketplaceListingPackage
                     - prepareMarketplaceListing
                     - prepareEbayListing

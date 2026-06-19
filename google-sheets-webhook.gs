@@ -4993,6 +4993,10 @@ function doPost(event) {
       result = webAppSendDueNow();
     } else if (action === 'saveMarketplaceItem') {
       result = webAppSaveMarketplaceItem(payload.item || payload);
+    } else if (action === 'getEbayListings') {
+      result = webAppGetEbayListings(payload.options || payload);
+    } else if (action === 'importEbayListings') {
+      result = webAppImportEbayListings(payload.options || payload);
     } else if (action === 'publishMarketplaceListing') {
       result = webAppPublishMarketplaceListing(payload.item || payload.listing || payload);
     } else if (action === 'publishEbayListing') {
@@ -6289,6 +6293,115 @@ function webAppSaveMarketplaceItem(item) {
     ok: true,
     truckId,
     rowNumber: targetRow
+  };
+}
+
+function webAppGetEbayListings(options) {
+  const config = getEbayConfig_();
+  if (config.missing.length) {
+    throw new Error('eBay is not configured yet. Missing: ' + config.missing.join(', '));
+  }
+
+  const limit = Math.max(1, Math.min(100, Number(options && options.limit) || 50));
+  const inventory = ebayApiFetch_('GET', `/sell/inventory/v1/offer?limit=${limit}`, config, null);
+  const offers = inventory.offers || [];
+  const listings = offers.map(offer => buildEbayListingSummary_(offer, config));
+  const activeListings = listings.filter(item => normaliseSalesText_(item.status) === 'published');
+
+  return {
+    ok: true,
+    source: 'ebay',
+    marketplaceId: config.marketplaceId,
+    total: listings.length,
+    active: activeListings.length,
+    listings,
+    limitations: [
+      'This reads Inventory API offers created or managed through the connected eBay app.',
+      'Older manual Seller Hub listings may need an additional Trading/Fulfillment read integration before AEGIS can see every detail.',
+      'Messages, buyer replies, traffic, and sales analytics need extra eBay permissions and separate confirmed actions before AEGIS can send or reply.'
+    ]
+  };
+}
+
+function webAppImportEbayListings(options) {
+  const ebay = webAppGetEbayListings(options || {});
+  const stockState = webAppGetStockState();
+  const stockById = {};
+  (stockState.items || []).forEach(stock => {
+    const id = clean_(stock.id);
+    if (id) stockById[id] = stock;
+  });
+
+  const sheet = getMarketplaceSheet_();
+  const imported = [];
+  const unmatched = [];
+
+  (ebay.listings || []).forEach(listing => {
+    const truckId = clean_(listing.sku);
+    if (!truckId || !stockById[truckId]) {
+      unmatched.push(listing);
+      return;
+    }
+
+    const current = findMarketplaceRow_(sheet, truckId);
+    const row = marketplaceItemToRow_({
+      truckId,
+      ebayStatus: listing.status === 'PUBLISHED' ? 'Live' : listing.status || 'Imported',
+      ebayUrl: listing.url,
+      lastRefreshed: Utilities.formatDate(new Date(), Session.getScriptTimeZone(), 'dd MMM yyyy HH:mm'),
+      nextAction: listing.status === 'PUBLISHED'
+        ? 'Monitor eBay enquiries and refresh listing weekly'
+        : 'Review imported eBay listing status',
+      notes: [
+        current.item && current.item.notes ? current.item.notes : '',
+        `Imported from eBay offer ${listing.offerId || 'unknown'}${listing.listingId ? ` / listing ${listing.listingId}` : ''}.`
+      ].filter(Boolean).join('\n')
+    }, current.item);
+    const targetRow = current.rowNumber || Math.max(sheet.getLastRow() + 1, MARKETPLACE_CONFIG.FIRST_ROW);
+    sheet.getRange(targetRow, 1, 1, MARKETPLACE_CONFIG.HEADERS.length).setValues([row]);
+    imported.push({
+      truckId,
+      title: listing.title,
+      status: listing.status,
+      url: listing.url,
+      rowNumber: targetRow
+    });
+  });
+
+  SpreadsheetApp.flush();
+  clearWebAppStateCache_(['marketplace']);
+
+  return {
+    ok: true,
+    source: 'ebay',
+    totalSeen: ebay.total,
+    imported: imported.length,
+    unmatched: unmatched.length,
+    importedListings: imported,
+    unmatchedListings: unmatched,
+    limitations: ebay.limitations
+  };
+}
+
+function buildEbayListingSummary_(offer, config) {
+  const sku = clean_(offer.sku);
+  const offerId = clean_(offer.offerId || offer.id);
+  const listingId = clean_(offer.listing && offer.listing.listingId) || clean_(offer.listingId);
+  return {
+    offerId,
+    listingId,
+    sku,
+    title: clean_(offer.listingDescription) ? serverShorten_(stripHtml_(offer.listingDescription), 120) : clean_(offer.title || offer.name),
+    status: clean_(offer.status || offer.listing && offer.listing.status),
+    marketplaceId: clean_(offer.marketplaceId || config.marketplaceId),
+    categoryId: clean_(offer.categoryId),
+    quantityLimitPerBuyer: clean_(offer.quantityLimitPerBuyer),
+    availableQuantity: offer.availableQuantity || offer.quantity || '',
+    price: offer.pricingSummary && offer.pricingSummary.price
+      ? `${offer.pricingSummary.price.value || ''} ${offer.pricingSummary.price.currency || ''}`.trim()
+      : '',
+    url: listingId ? `https://www.ebay.co.uk/itm/${listingId}` : '',
+    raw: offer
   };
 }
 

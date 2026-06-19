@@ -17,6 +17,7 @@ const WRITE_ACTIONS = new Set([
   'sendCampaignEmailBatch',
   'sendDueCampaignEmails',
   'saveMarketplaceItem',
+  'importEbayListings',
   'publishMarketplaceListing',
   'publishEbayListing',
   'saveEbayAppConfig',
@@ -139,6 +140,12 @@ const ACTION_ALIASES = new Map([
   ['prepareMarketplaceListing', 'publishMarketplaceListing'],
   ['prepareEbayListing', 'publishMarketplaceListing'],
   ['prepareFacebookListing', 'publishMarketplaceListing'],
+  ['readEbayListings', 'getEbayListings'],
+  ['listEbayListings', 'getEbayListings'],
+  ['showEbayListings', 'getEbayListings'],
+  ['syncEbayListings', 'importEbayListings'],
+  ['importCurrentEbayListings', 'importEbayListings'],
+  ['importEbayLiveListings', 'importEbayListings'],
   ['publishEbayStock', 'publishEbayListing'],
   ['publishEbayMarketplaceListing', 'publishEbayListing'],
   ['listOnEbay', 'publishEbayListing'],
@@ -193,6 +200,7 @@ const READ_ACTIONS = new Set([
   'extractBusinessWebsiteContacts',
   'searchGoogleMapsBusinesses',
   'buildMarketplaceListingPackage',
+  'getEbayListings',
   'exportMarketplaceFeed'
 ]);
 
