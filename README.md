@@ -20,9 +20,9 @@ This is an evolving project rather than a finished commercial product. I use it 
 | Area | What it explores |
 | --- | --- |
 | AEGIS sales workflow | Lead tracking, customer enquiries, product information and proposal support |
-| [WhatsApp email agent](./aegis-whatsapp-agent/) | Gmail summaries, suggested replies and approval actions through WhatsApp |
-| [Forklift Pro Solutions implementation](./Forklift%20Pro%20Solutions/) | A practical business setting used to test and improve the workflow |
-| [Google Apps Script tools](./apps-script/) | Lightweight automation and spreadsheet-connected processes |
+| [WhatsApp email agent](https://github.com/aberesford074-web/AEGIS/tree/main/aegis-whatsapp-agent) | Gmail summaries, suggested replies and approval actions through WhatsApp |
+| [Forklift Pro Solutions implementation](https://github.com/aberesford074-web/AEGIS/tree/main/Forklift%20Pro%20Solutions) | A practical business setting used to test and improve the workflow |
+| [Google Apps Script tools](https://github.com/aberesford074-web/AEGIS/tree/main/apps-script) | Lightweight automation and spreadsheet-connected processes |
 
 ## Tools explored
 
