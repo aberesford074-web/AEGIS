@@ -24,7 +24,7 @@ For WhatsApp, we still need:
 For sandbox testing, use:
 
 ```text
-TWILIO_WHATSAPP_FROM=whatsapp:+14155238886
+TWILIO_WHATSAPP_FROM=whatsapp:+1XXXXXXXXXX
 ```
 
 Your phone must join the sandbox in Twilio first.
@@ -45,7 +45,7 @@ join example-word
 5. Send that exact message from your WhatsApp to:
 
 ```text
-+1 415 523 8886
++1 XXX XXX XXXX
 ```
 
 After that, Twilio can send WhatsApp messages to your phone from the sandbox.
@@ -66,8 +66,8 @@ TWILIO_AUTH_TOKEN=
 Then add:
 
 ```text
-TWILIO_WHATSAPP_FROM=whatsapp:+14155238886
-OWNER_WHATSAPP_TO=whatsapp:+44YOUR_PERSONAL_WHATSAPP_NUMBER
+TWILIO_WHATSAPP_FROM=whatsapp:+1XXXXXXXXXX
+OWNER_WHATSAPP_TO=whatsapp:+44XXXXXXXXXX
 ```
 
 Do not use the Twilio phone number as `OWNER_WHATSAPP_TO` unless that is genuinely the phone you personally use on WhatsApp.
