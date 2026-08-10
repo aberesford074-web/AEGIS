@@ -25,17 +25,17 @@ The clean pattern is one profile per person:
 - `aaron` profile: Aaron's Gmail, Aaron's WhatsApp, Aaron's token store
 - `dad` profile: Dad's Gmail, Dad's WhatsApp, Dad's token store
 
-Dad's profile file is already prepared at `.env.dad` with:
+Dad's example profile is available at `.env.dad.example` with:
 
-- email account to connect later: `brett@forkliftpro.co.uk`
-- WhatsApp destination: `+44 7454 808214`
+- email account: configured privately through Google OAuth
+- WhatsApp destination: a placeholder to replace locally
 - local port: `8788`
 - local store: `./data/store.dad.json`
 
 You can keep the existing `.env` for backwards compatibility, but the preferred setup is:
 
 ```bash
-cp .env .env.aaron
+cp .env.aaron.example .env.aaron
 cp .env.dad.example .env.dad
 ```
 
@@ -44,7 +44,7 @@ Then fill in Dad's public URL in `.env.dad` when you want inbound WhatsApp repli
 ## Local Setup
 
 ```bash
-cd /Users/aaronberesford/Desktop/AEGIS/aegis-whatsapp-agent
+cd aegis-whatsapp-agent
 npm run start:aaron
 ```
 
@@ -165,8 +165,8 @@ Needed:
 For sandbox testing:
 
 ```text
-TWILIO_WHATSAPP_FROM=whatsapp:+14155238886
-OWNER_WHATSAPP_TO=whatsapp:+44YOURNUMBER
+TWILIO_WHATSAPP_FROM=whatsapp:+1XXXXXXXXXX
+OWNER_WHATSAPP_TO=whatsapp:+44XXXXXXXXXX
 ```
 
 Your phone must join the Twilio WhatsApp sandbox first.
