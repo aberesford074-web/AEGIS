@@ -73,8 +73,8 @@ Example values:
 
 ```text
 OPENAI_MODEL = gpt-4.1-mini
-TWILIO_WHATSAPP_FROM = whatsapp:+14155238886
-AARON_WHATSAPP_TO = whatsapp:+44YOURNUMBER
+TWILIO_WHATSAPP_FROM = whatsapp:+1XXXXXXXXXX
+AARON_WHATSAPP_TO = whatsapp:+44XXXXXXXXXX
 ```
 
 Do not put these values in the website JavaScript.
