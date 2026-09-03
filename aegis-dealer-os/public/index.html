@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#0b0e0c" />
+    <title>DealerFoundry OS</title>
+    <link rel="stylesheet" href="/app.css" />
+    <link rel="stylesheet" href="/os.css" />
+    <link rel="stylesheet" href="/sales-agent.css" />
+  </head>
+  <body>
+    <div class="shell">
+      <aside class="sidebar">
+        <a class="brand" href="#command-centre" aria-label="DealerFoundry OS">
+          <span class="brand-mark">DF</span><span><b>DealerFoundry</b><small>MACHINERY OPERATING SYSTEM</small></span>
+        </a>
+        <nav aria-label="Workspace navigation">
+          <button class="nav active" data-screen="command-centre">Command Centre</button>
+          <button class="nav" data-screen="sales">Sales Desk</button>
+          <button class="nav" data-screen="opportunities">Opportunities</button>
+          <button class="nav" data-screen="machines">Machine Stock</button>
+          <button class="nav" data-screen="templates">Category Templates</button>
+          <button class="nav" data-screen="publishing">Publishing</button>
+          <button class="nav" data-screen="lead-inbox">Lead Inbox</button>
+          <button class="nav" data-screen="buyer-match">Buyer Match</button>
+          <button class="nav" data-screen="preparation">Preparation</button>
+          <button class="nav" data-screen="commercial">Quotes &amp; Reservations</button>
+          <button class="nav" data-screen="companies">Company Database</button>
+          <button class="nav" data-screen="sales-agent">AI Sales Agent</button>
+          <button class="nav" data-screen="reports">Reports</button>
+          <button class="nav" data-screen="automations">Automations</button>
+          <button class="nav" data-screen="ai-workbench">AI Workbench</button>
+          <button class="nav" data-screen="connections">Connections</button>
+          <button class="nav" data-screen="notifications">Notifications</button>
+          <button class="nav" data-screen="approvals">Approvals</button>
+        </nav>
+        <div class="sidebar-foot"><span id="auth-label">Checking sign-in…</span><button id="sign-in" class="text-button">Sign in</button></div>
+      </aside>
+      <main>
+        <header class="topbar"><span class="status-dot"></span><span id="workspace-name">DealerFoundry workspace</span><div class="topbar-actions"><button id="refresh" class="ghost">Refresh</button><button id="sign-out" class="ghost hidden">Sign out</button></div></header>
+
+        <section id="signed-out" class="gate hidden">
+          <p class="eyebrow">DEALERFOUNDRY OS</p>
+          <h1>Your dealer workspace,<br />in one place.</h1>
+          <p>Sign in to manage stock, companies, sales and approved automation for your business.</p>
+          <button id="sign-in-main" class="primary">Sign in to DealerFoundry</button>
+        </section>
+
+        <section id="setup" class="gate hidden">
+          <p class="eyebrow">WELCOME TO DEALERFOUNDRY</p>
+          <h1>Your dealer workspace is being prepared.</h1>
+          <p>Use the invitation sent to your business email to enter your DealerFoundry workspace. New workspaces are created securely after a subscription is confirmed.</p>
+          <a class="primary setup-link" href="https://aegis-dealer-os-site.vercel.app/#plans">Choose a DealerFoundry plan</a>
+        </section>
+
+        <div id="app" class="hidden">
+          <section class="screen active" data-screen="command-centre">
+            <div class="heading"><div><p class="eyebrow">LIVE DEALER OVERVIEW</p><h1>Command Centre</h1><p>What needs attention across your sales and stock operation.</p></div><button class="primary" data-go="machines">Import stock</button></div>
+            <section id="onboarding-panel" class="panel onboarding hidden">
+              <div><p class="eyebrow">GET STARTED</p><h2>Bring your dealer workspace to life.</h2><p id="onboarding-summary">Complete these steps to connect your website and begin publishing live stock.</p><div id="onboarding-checklist" class="onboarding-checklist"></div></div>
+              <div class="onboarding-actions"><button class="secondary" data-go="connections">Add website details</button><button class="secondary" data-go="machines">Add machine stock</button><button id="manage-billing" class="ghost">Manage subscription</button></div>
+            </section>
+            <div class="metrics" id="metrics"></div>
+            <div class="grid two"><article class="panel"><h2>Stock workspace</h2><p>Add machines individually or upload a spreadsheet. New stock stays in draft until it has been checked and published.</p><button id="import-starter" class="secondary">Open stock upload</button><p id="starter-result" class="muted"></p></article><article class="panel"><h2>Website publishing</h2><p>Your website can use the DealerFoundry live stock feed, so approved machines appear without entering them twice.</p><code id="stock-feed">Sign in to view your stock feed</code><button class="secondary" data-go="connections">Website settings</button></article></div>
+          </section>
+
+          <section class="screen" data-screen="sales"><div class="heading"><div><p class="eyebrow">SALES DESK</p><h1>Sales and enquiries</h1><p>Record completed sales and keep customer follow-ups in one workspace.</p></div><button id="record-sale" class="primary">Record sale</button></div><div id="sales-list" class="panel empty">No sales have been recorded yet.</div></section>
+
+          <section class="screen" data-screen="opportunities"><div class="heading"><div><p class="eyebrow">PIPELINE</p><h1>Opportunities</h1><p>Deals and sourcing requests that need a next action.</p></div><button id="create-opportunity" class="primary">New opportunity</button></div><div id="opportunity-list" class="panel empty">No opportunities yet.</div></section>
+
+          <section class="screen" data-screen="machines"><div class="heading"><div><p class="eyebrow">MACHINE STOCK</p><h1>Stock, sourcing and publishing</h1><p>Import a spreadsheet or JSON export, review the mapping, then choose what goes live.</p></div><button id="add-machine" class="primary">Add machine</button></div><div class="grid two"><article class="panel"><h2>Import data</h2><p>Upload CSV or JSON from your DMS, ERP, spreadsheet or website export. DealerFoundry maps common dealer fields before it imports.</p><input id="machine-file" type="file" accept=".csv,.json,application/json,text/csv" /><button id="import-file" class="secondary" disabled>Preview import</button><p id="file-result" class="muted"></p></article><article class="panel"><h2>Publish to your website</h2><p>Imported items start as drafts. Mark an item as published only after checking its price, photos and wording.</p><code id="stock-feed-2">Stock feed unavailable</code></article></div><div id="machine-list" class="table-wrap panel empty">No machine stock yet.</div></section>
+
+          <section class="screen" data-screen="templates"><div class="heading"><div><p class="eyebrow">STRUCTURED STOCK</p><h1>Machine category templates</h1><p>Capture the specifications buyers actually compare, with a preparation checklist suited to each machine type.</p></div><button class="primary" data-go="machines">Add machine</button></div><div id="template-grid" class="template-grid"></div></section>
+
+          <section class="screen" data-screen="publishing"><div class="heading"><div><p class="eyebrow">CHANNEL CONTROL</p><h1>Publishing desk</h1><p>One machine record, with a clear status for every approved sales channel.</p></div><button class="primary" data-go="machines">Review stock</button></div><div id="publishing-summary" class="metrics"></div><div id="publishing-list" class="table-wrap panel empty">No publishing records yet.</div></section>
+
+          <section class="screen" data-screen="lead-inbox"><div class="heading"><div><p class="eyebrow">ONE INBOX</p><h1>Lead inbox</h1><p>Website, phone and connected-channel enquiries organised around the machine and next action.</p></div><button id="create-lead" class="primary">New lead</button></div><div id="lead-summary" class="metrics"></div><div id="lead-list" class="table-wrap panel empty">No leads yet.</div></section>
+
+          <section class="screen" data-screen="buyer-match"><div class="heading"><div><p class="eyebrow">DEMAND MATCHING</p><h1>Buyer match</h1><p>Structured buyer requirements are scored automatically against every available machine.</p></div><button id="new-requirement" class="primary">New requirement</button></div><div id="buyer-match-summary" class="metrics"></div><div id="buyer-requirements" class="table-wrap panel empty">No buyer requirements yet.</div><div id="buyer-match-list" class="table-wrap panel empty">No automatic matches yet.</div></section>
+
+          <section class="screen" data-screen="preparation"><div class="heading"><div><p class="eyebrow">PREP &amp; WORKSHOP</p><h1>Preparation board</h1><p>Photography, inspection, servicing, certification and delivery tasks tied to machine records.</p></div><button id="new-prep-task" class="primary">New prep task</button></div><div id="prep-summary" class="metrics"></div><div id="prep-list" class="table-wrap panel empty">No preparation tasks yet.</div></section>
+
+          <section class="screen" data-screen="commercial"><div class="heading"><div><p class="eyebrow">COMMERCIAL DESK</p><h1>Quotations, reservations and documents</h1><p>Keep the commercial trail tied to the customer, machine and opportunity.</p></div><div class="heading-actions"><button id="new-quotation" class="secondary">New quotation</button><button id="new-reservation" class="secondary">Reserve machine</button><button id="new-document" class="primary">Add document</button></div></div><div id="commercial-summary" class="metrics"></div><div id="commercial-list" class="table-wrap panel empty">No commercial records yet.</div></section>
+
+          <section class="screen" data-screen="companies"><div class="heading"><div><p class="eyebrow">COMPANY DATABASE</p><h1>Companies and contacts</h1><p>Import prospects, buyers, suppliers and contact records from a spreadsheet.</p></div><button id="add-company" class="primary">Add company</button></div><div id="company-list" class="table-wrap panel empty">No companies yet.</div></section>
+
+          <section class="screen" data-screen="sales-agent"><div class="heading"><div><p class="eyebrow">APPROVAL-FIRST OUTREACH</p><h1>AI sales agent</h1><p>Prepare an evidence-led call brief for each prospect. The agent checks their public website, suggests specific improvements and aims for a 20-minute consultation with Aaron.</p></div><div class="heading-actions"><button id="queue-sales-agent" class="primary">Queue today’s audits</button><span class="channel">Human approval required</span></div></div><div id="sales-agent-summary" class="metrics"></div><div class="panel agent-notice"><strong>Before any call</strong><p>DealerFoundry identifies itself as an AI assistant, respects opt-outs and never dials automatically. Connect a compliant phone provider only after reviewing local telemarketing and recording rules.</p></div><div id="sales-agent-list" class="table-wrap panel empty">No prospects with phone numbers yet. Import a prospect list to begin.</div><div id="sales-agent-briefs" class="agent-briefs"></div></section>
+
+          <section class="screen" data-screen="reports"><div class="heading"><div><p class="eyebrow">OPERATIONAL INTELLIGENCE</p><h1>Costs, margins and ageing</h1><p>Stock exposure, pipeline workload, inventory age and realised margin in one view.</p></div></div><div id="report-metrics" class="metrics"></div><div class="grid two"><article class="panel"><h2>Stock lifecycle</h2><div id="stock-report" class="report-bars"></div></article><article class="panel"><h2>Pipeline stages</h2><div id="pipeline-report" class="report-bars"></div></article></div><div id="insight-list" class="insight-grid"></div></section>
+
+          <section class="screen" data-screen="automations"><div class="heading"><div><p class="eyebrow">AUTOMATIONS</p><h1>Automations</h1><p>Automations can prepare work and request approval. Email and marketplace access are added only once a dealer connects those accounts.</p></div><button id="new-automation" class="primary">Create automation</button></div><div id="automation-list" class="panel empty">No automations yet.</div></section>
+
+          <section class="screen" data-screen="ai-workbench"><div class="heading"><div><p class="eyebrow">APPROVAL-FIRST AI</p><h1>AI workbench</h1><p>DealerFoundry finds operational risks and prepares suggested work. A person approves every customer-facing or commercial action.</p></div><button id="ask-ai" class="primary">Prepare next action</button></div><div id="ai-summary" class="metrics"></div><div id="ai-insights" class="insight-grid"></div></section>
+
+          <section class="screen" data-screen="connections"><div class="heading"><div><p class="eyebrow">SELECTED CONNECTIONS</p><h1>Website and marketplace integrations</h1><p>Connect only channels that preserve one trusted machine record and return useful enquiry data.</p></div></div><div class="grid three"><article class="panel"><h2>Dealer website</h2><p>Store your website address and use DealerFoundry’s live inventory feed.</p><form id="website-form"><input id="website-url" type="url" placeholder="https://yourwebsite.co.uk" /><button class="secondary">Save website</button></form></article><article class="panel"><h2>Communications</h2><p>Gmail and WhatsApp connections capture enquiries and prepare replies within the approval queue.</p><span class="channel">Gmail</span> <span class="channel">WhatsApp</span></article><article class="panel"><h2>Marketplaces</h2><p>MachineryTrader and Mascus are the first candidate feeds. Each requires provider approval, field mapping and a controlled pilot.</p><span class="channel offline">Controlled rollout</span></article></div><div id="connection-list" class="panel empty">No connections yet.</div></section>
+
+          <section class="screen" data-screen="notifications"><div class="heading"><div><p class="eyebrow">OPERATIONAL ALERTS</p><h1>Notifications</h1><p>Publishing failures, expiring reservations, stock matches and task reminders appear here.</p></div></div><div id="notification-list" class="panel empty">No notifications yet.</div></section>
+
+          <section class="screen" data-screen="approvals"><div class="heading"><div><p class="eyebrow">HUMAN APPROVAL</p><h1>Approval queue</h1><p>DealerFoundry never publishes stock, sends messages or changes commercial terms without your approval.</p></div></div><div id="approval-list" class="panel empty">No approvals waiting.</div></section>
+        </div>
+      </main>
+    </div>
+    <dialog id="dialog"><button class="close" id="dialog-close" type="button" aria-label="Close">×</button><div id="dialog-content"></div></dialog>
+    <div id="toast" role="status"></div>
+    <script src="/app.js" defer></script>
+  </body>
+</html>

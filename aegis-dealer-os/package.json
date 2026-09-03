@@ -1,0 +1,22 @@
+{
+  "name": "aegis-dealer-os",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Vercel-hosted AEGIS Dealer OS platform foundation",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "test": "node --test",
+    "db:migrate": "node scripts/migrate.js",
+    "scheduler:configure": "node scripts/configure-campaign-scheduler.js"
+  },
+  "dependencies": {
+    "@clerk/backend": "^2.19.0",
+    "@supabase/supabase-js": "^2.86.0",
+    "@vercel/functions": "^3.9.5",
+    "postgres": "^3.4.7",
+    "stripe": "^22.5.0"
+  }
+}

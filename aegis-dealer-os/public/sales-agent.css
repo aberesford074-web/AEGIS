@@ -1,0 +1,12 @@
+.table-wrap a{color:#ff9b6d}
+.agent-notice{border-color:#6b321c;background:linear-gradient(135deg,#1c1713,#15171c);margin-bottom:18px}
+.agent-notice p{margin-bottom:0}
+.agent-briefs{display:grid;gap:18px;margin-top:18px}
+.agent-brief{border-color:#3b2a20}
+.agent-brief-head{display:flex;align-items:flex-start;justify-content:space-between;gap:18px}
+.agent-brief h2{margin-bottom:16px}
+.agent-columns{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;margin:18px 0}
+.agent-columns strong{font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+.agent-columns ul{margin:10px 0 0;padding-left:18px;color:var(--muted);line-height:1.55}
+.agent-brief .muted{border-top:1px solid var(--line);padding-top:14px;margin-top:18px}
+@media(max-width:900px){.agent-columns{grid-template-columns:1fr}}

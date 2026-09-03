@@ -1,0 +1,107 @@
+[
+  {
+    "id": "aegis-at30-allterrain",
+    "brand": "AEGIS",
+    "model": "AT30 AllTerrain",
+    "type": "All-terrain Electric Pallet Truck",
+    "year": "2026",
+    "price": "POA",
+    "status": "in-stock",
+    "description": "Heavy-duty all-terrain pallet truck for yards, construction sites, farms and outdoor material movement where standard pallet trucks struggle.",
+    "imageMain": "assets/product-cutouts/aegis-at30-cutout-v2.png"
+  },
+  {
+    "id": "ept20-15et2",
+    "brand": "TianyuLux",
+    "model": "EPT20-15ET2",
+    "type": "Electric Pallet Truck",
+    "price": "2250",
+    "status": "in-stock",
+    "description": "Compact electric pallet truck. Fully serviced, battery included and available with nationwide delivery.",
+    "imageMain": "assets/product-cutouts/electric-pallet-truck-cutout-v2.png"
+  },
+  {
+    "id": "ept25-20et2",
+    "brand": "TianyuLux",
+    "model": "EPT25-20ET2",
+    "type": "Electric Pallet Truck",
+    "price": "2750",
+    "status": "in-stock",
+    "description": "Electric pallet truck for busy warehouses that need dependable lifting power and long battery life.",
+    "imageMain": "assets/product-cutouts/electric-pallet-truck-cutout-v2.png"
+  },
+  {
+    "id": "toyota-8fbe20u",
+    "brand": "Toyota",
+    "model": "8FBE20U",
+    "type": "Electric Forklift",
+    "year": "2018",
+    "hours": "3,245 hrs",
+    "price": "18500",
+    "status": "in-stock",
+    "description": "Three-wheel electric counterbalance forklift in excellent condition, fully serviced and ideal for warehouse use.",
+    "imageMain": "assets/product-cutouts/toyota-verified-cutout-v2.png"
+  },
+  {
+    "id": "hyster-j40xnt",
+    "brand": "Hyster",
+    "model": "J40XNT",
+    "type": "Electric Forklift",
+    "year": "2017",
+    "hours": "4,102 hrs",
+    "price": "16750",
+    "status": "in-stock",
+    "description": "Electric counterbalance forklift in excellent condition and ready for work.",
+    "imageMain": "assets/product-cutouts/hyster-verified-cutout-v2.png"
+  },
+  {
+    "id": "source-toyota-electric-forklifts",
+    "brand": "Toyota",
+    "model": "Electric Forklift Range",
+    "type": "Electric Counterbalance Forklift",
+    "price": "POA",
+    "status": "available-to-source",
+    "description": "Sourcing profile for Toyota electric forklift requirements.",
+    "imageMain": "assets/product-cutouts/toyota-forklift-cutout-v2.png"
+  },
+  {
+    "id": "source-jcb-3cx-backhoe-loaders",
+    "brand": "JCB",
+    "model": "3CX Backhoe Loader",
+    "type": "Backhoe Loader",
+    "price": "POA",
+    "status": "available-to-source",
+    "description": "Sourcing profile for JCB 3CX backhoe loader requirements.",
+    "imageMain": "assets/product-cutouts/backhoe-loader-source-cutout-v2.png"
+  },
+  {
+    "id": "source-kubota-kx-mini-excavators",
+    "brand": "Kubota",
+    "model": "KX Mini Excavator Range",
+    "type": "Mini Excavator",
+    "price": "POA",
+    "status": "available-to-source",
+    "description": "Sourcing profile for Kubota KX mini excavator requirements.",
+    "imageMain": "assets/product-cutouts/mini-excavator-source-cutout-v2.png"
+  },
+  {
+    "id": "source-manitou-mt-telehandlers",
+    "brand": "Manitou",
+    "model": "MT Telehandler Range",
+    "type": "Telehandler",
+    "price": "POA",
+    "status": "available-to-source",
+    "description": "Sourcing profile for Manitou MT telehandler requirements.",
+    "imageMain": "assets/product-cutouts/telehandler-source-cutout-v2.png"
+  },
+  {
+    "id": "source-daf-lf-commercial-trucks",
+    "brand": "DAF",
+    "model": "LF Commercial Truck Range",
+    "type": "Rigid Commercial Truck",
+    "price": "POA",
+    "status": "available-to-source",
+    "description": "Sourcing profile for DAF LF commercial vehicle requirements.",
+    "imageMain": "assets/product-cutouts/rigid-truck-source-cutout-v2.png"
+  }
+]

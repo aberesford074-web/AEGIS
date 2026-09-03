@@ -1,0 +1,90 @@
+{
+  "builds": [
+    {
+      "src": "public/**",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "api/router.js",
+      "use": "@vercel/node",
+      "config": { "maxDuration": 30 }
+    },
+    {
+      "src": "api/whatsapp-webhook.js",
+      "use": "@vercel/node",
+      "config": { "maxDuration": 30 }
+    },
+    {
+      "src": "api/clerk-webhook.js",
+      "use": "@vercel/node",
+      "config": { "maxDuration": 30 }
+    },
+    {
+      "src": "api/stripe-webhook.js",
+      "use": "@vercel/node",
+      "config": { "maxDuration": 30 }
+    }
+  ],
+  "routes": [
+    { "src": "/", "dest": "/public/index.html" },
+    { "src": "/privacy.html", "dest": "/public/privacy.html" },
+    { "src": "/terms.html", "dest": "/public/terms.html" },
+    { "src": "/whatsapp-connect.html", "dest": "/public/whatsapp-connect.html" },
+    { "src": "/app.css", "dest": "/public/app.css" },
+    { "src": "/os.css", "dest": "/public/os.css" },
+    { "src": "/app.js", "dest": "/public/app.js" },
+    { "handle": "filesystem" },
+    { "src": "/api/integrations/gmail/callback", "dest": "/api/router.js?route=gmailCallback" },
+    { "src": "/api/integrations/gmail/start", "dest": "/api/router.js?route=gmailStart" },
+    { "src": "/api/integrations/whatsapp/webhook", "dest": "/api/whatsapp-webhook.js" },
+    { "src": "/api/webhooks/clerk", "dest": "/api/clerk-webhook.js" },
+    { "src": "/api/webhooks/stripe", "dest": "/api/stripe-webhook.js" },
+    { "src": "/api/integrations/whatsapp/status", "dest": "/api/router.js?route=whatsappStatus" },
+    { "src": "/api/integrations/whatsapp/start", "dest": "/api/router.js?route=whatsappStart" },
+    { "src": "/api/integrations/whatsapp/pair", "dest": "/api/router.js?route=whatsappPair" },
+    { "src": "/api/integrations/whatsapp/config", "dest": "/api/router.js?route=whatsappConfig" },
+    { "src": "/api/integrations/whatsapp/complete", "dest": "/api/router.js?route=whatsappComplete" },
+    { "src": "/api/approvals/([^/]+)", "dest": "/api/router.js?route=approvalDecision&id=$1" },
+    { "src": "/api/jobs/run-automations", "dest": "/api/router.js?route=runAutomations" },
+    { "src": "/api/jobs/run-campaigns", "dest": "/api/router.js?route=runCampaigns" },
+    { "src": "/api/jobs/run-operations", "dest": "/api/router.js?route=runOperations" },
+    { "src": "/api/jobs/run-sales-agent", "dest": "/api/router.js?route=runSalesAgent" },
+    { "src": "/api/activities", "dest": "/api/router.js?route=activities" },
+    { "src": "/api/accounts", "dest": "/api/router.js?route=accounts" },
+    { "src": "/api/accounts/actions", "dest": "/api/router.js?route=accountActions" },
+    { "src": "/api/approvals", "dest": "/api/router.js?route=approvals" },
+    { "src": "/api/automations", "dest": "/api/router.js?route=automations" },
+    { "src": "/api/billing", "dest": "/api/router.js?route=billing" },
+    { "src": "/api/campaigns", "dest": "/api/router.js?route=campaigns" },
+    { "src": "/api/customers", "dest": "/api/router.js?route=customers" },
+    { "src": "/api/dashboard", "dest": "/api/router.js?route=dashboard" },
+    { "src": "/api/deals", "dest": "/api/router.js?route=deals" },
+    { "src": "/api/demo", "dest": "/api/router.js?route=demo" },
+    { "src": "/api/health", "dest": "/api/router.js?route=health" },
+    { "src": "/api/integrations", "dest": "/api/router.js?route=integrations" },
+    { "src": "/api/knowledge", "dest": "/api/router.js?route=knowledge" },
+    { "src": "/api/machines", "dest": "/api/router.js?route=machines" },
+    { "src": "/api/notifications", "dest": "/api/router.js?route=notifications" },
+    { "src": "/api/onboarding/organisation", "dest": "/api/router.js?route=onboarding" },
+    { "src": "/api/opportunities", "dest": "/api/router.js?route=opportunities" },
+    { "src": "/api/os", "dest": "/api/router.js?route=os" },
+    { "src": "/api/platform", "dest": "/api/router.js?route=platform" },
+    { "src": "/api/public-signup", "dest": "/api/router.js?route=publicSignup" },
+    { "src": "/api/public-booking", "dest": "/api/router.js?route=publicBooking" },
+    { "src": "/api/prospects", "dest": "/api/router.js?route=prospects" },
+    { "src": "/api/proposals", "dest": "/api/router.js?route=proposals" },
+    { "src": "/api/records", "dest": "/api/router.js?route=records" },
+    { "src": "/api/search", "dest": "/api/router.js?route=search" },
+    { "src": "/api/sales-agent", "dest": "/api/router.js?route=salesAgent" }
+  ],
+  "crons": [
+    {
+      "path": "/api/jobs/run-automations",
+      "schedule": "0 5 * * *"
+    },
+    {
+      "path": "/api/jobs/run-sales-agent",
+      "schedule": "*/15 * * * *"
+    }
+  ]
+}

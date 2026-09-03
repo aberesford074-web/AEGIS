@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Connect WhatsApp to AEGIS</title>
+  <style>
+    :root { color-scheme: light; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+    * { box-sizing: border-box; }
+    body { margin: 0; min-height: 100vh; display: grid; place-items: center; background: #f5f6f4; color: #202220; padding: 24px; }
+    main { width: min(560px, 100%); background: white; border: 1px solid #e4e7e2; border-radius: 24px; padding: 34px; box-shadow: 0 18px 50px rgba(24,34,22,.09); }
+    .brand { font-size: 12px; font-weight: 800; letter-spacing: 2.2px; color: #6e756b; }
+    .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #91ee52; margin-right: 9px; }
+    h1 { margin: 20px 0 10px; font-size: 34px; letter-spacing: -.8px; }
+    p { color: #687065; line-height: 1.55; }
+    .steps { background: #f1f3ef; border-radius: 16px; padding: 16px 18px; margin: 22px 0; font-size: 14px; line-height: 1.65; }
+    button { width: 100%; border: 0; border-radius: 13px; background: #91ee52; color: #15210f; padding: 14px 18px; font-size: 16px; font-weight: 750; cursor: pointer; }
+    button:disabled { opacity: .5; cursor: wait; }
+    #status { min-height: 24px; margin-top: 14px; font-size: 14px; color: #687065; }
+    .error { color: #b33a2e !important; }
+    small { display: block; margin-top: 22px; color: #8a9087; line-height: 1.45; }
+  </style>
+</head>
+<body>
+  <main>
+    <div class="brand"><span class="dot"></span>AEGIS DEALER OPERATIONS</div>
+    <h1>Connect WhatsApp</h1>
+    <p>Sign in with Meta and choose the WhatsApp Business number this dealership uses. AEGIS handles the technical setup.</p>
+    <div class="steps">1. Sign in to Meta<br>2. Choose or create the business account<br>3. Select the WhatsApp number<br>4. Return automatically to AEGIS</div>
+    <button id="connect" disabled>Preparing secure sign-in…</button>
+    <div id="status" role="status"></div>
+    <small>AEGIS stores the connection securely. Unknown WhatsApp senders are not allowed to control business data until a dealer manager pairs them.</small>
+  </main>
+  <script>
+    const button = document.querySelector('#connect');
+    const status = document.querySelector('#status');
+    const state = new URLSearchParams(location.search).get('state');
+    let settings;
+    let signup;
+    let code;
+
+    function message(text, isError = false) {
+      status.textContent = text;
+      status.className = isError ? 'error' : '';
+    }
+
+    function finishIfReady() {
+      if (!signup || !code) return;
+      button.disabled = true;
+      message('Finishing the secure connection…');
+      fetch('/api/integrations/whatsapp/complete', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          state,
+          code,
+          wabaId: signup.waba_id,
+          phoneNumberId: signup.phone_number_id,
+          businessId: signup.business_id
+        })
+      }).then(async (response) => {
+        const payload = await response.json();
+        if (!response.ok) throw new Error(payload.error || 'WhatsApp could not be connected.');
+        message('Connected. Returning to AEGIS…');
+        location.href = payload.callbackUrl;
+      }).catch((error) => {
+        button.disabled = false;
+        message(error.message, true);
+      });
+    }
+
+    window.fbAsyncInit = () => {
+      FB.init({ appId: settings.appId, autoLogAppEvents: true, xfbml: false, version: settings.graphVersion });
+      button.disabled = false;
+      button.textContent = 'Continue with Meta';
+    };
+
+    window.addEventListener('message', (event) => {
+      if (!event.origin.endsWith('facebook.com')) return;
+      try {
+        const payload = typeof event.data === 'string' ? JSON.parse(event.data) : event.data;
+        if (payload?.type !== 'WA_EMBEDDED_SIGNUP') return;
+        const data = payload.data || {};
+        if (data.waba_id && data.phone_number_id) {
+          signup = data;
+          finishIfReady();
+        }
+      } catch (_) {}
+    });
+
+    button.addEventListener('click', () => {
+      button.disabled = true;
+      message('Opening Meta sign-in…');
+      FB.login((response) => {
+        if (response.authResponse?.code) {
+          code = response.authResponse.code;
+          finishIfReady();
+        } else {
+          button.disabled = false;
+          message('Sign-in was cancelled. Nothing was changed.');
+        }
+      }, {
+        config_id: settings.configId,
+        response_type: 'code',
+        override_default_response_type: true,
+        extras: { sessionInfoVersion: '3' }
+      });
+    });
+
+    if (!state) {
+      message('This connection link is invalid. Start again from AEGIS.', true);
+    } else {
+      fetch(`/api/integrations/whatsapp/config?state=${encodeURIComponent(state)}`)
+        .then(async (response) => {
+          const payload = await response.json();
+          if (!response.ok) throw new Error(payload.error || 'WhatsApp setup is unavailable.');
+          settings = payload;
+          const script = document.createElement('script');
+          script.src = 'https://connect.facebook.net/en_US/sdk.js';
+          script.async = true;
+          script.defer = true;
+          document.body.appendChild(script);
+        })
+        .catch((error) => message(error.message, true));
+    }
+  </script>
+</body>
+</html>
+
