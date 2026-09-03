@@ -27,11 +27,12 @@ export async function runSalesAgentAuditJobs({ supabase, limit = DEFAULT_BATCH_L
 
     try {
       const { data: prospect, error: prospectError } = await supabase.from('prospect_companies')
-        .select('id,company,contact_name,phone,email,website,notes,status')
+        .select('id,company,contact_name,phone,email,website,notes,status,outreach_status')
         .eq('organisation_id', job.organisation_id).eq('id', job.prospect_id).maybeSingle();
       if (prospectError) throw prospectError;
       if (!prospect) throw new Error('The prospect no longer exists.');
       if (!prospect.phone) throw new Error('The prospect has no phone number.');
+      if (prospect.outreach_status === 'opted_out') throw new Error('The prospect has opted out of outreach.');
 
       const websiteAudit = await auditProspectWebsite(prospect.website);
       const callBrief = await createSalesCallBrief({ prospect, websiteAudit });

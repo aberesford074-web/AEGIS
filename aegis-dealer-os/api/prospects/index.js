@@ -5,9 +5,11 @@ import { organisationContext } from '../../lib/supabase.js';
 const rowFields = new Set([
   'company', 'phone', 'postcode', 'address', 'email', 'spoke_to', 'contact_name',
   'notes', 'website', 'linkedin_url', 'source_url', 'confidence', 'status',
-  'next_action_at', 'last_contacted_at', 'owner_clerk_user_id'
+  'next_action_at', 'last_contacted_at', 'owner_clerk_user_id', 'outreach_status',
+  'consent_source', 'consent_obtained_at', 'opted_out_at', 'opt_out_reason'
 ]);
 const validStatuses = new Set(['not_contacted', 'attempted', 'contacted', 'follow_up', 'qualified', 'not_interested']);
+const validOutreachStatuses = new Set(['unknown', 'allowed', 'opted_out']);
 const text = (value) => String(value ?? '').trim();
 const companyKey = (value) => text(value).toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
 const chunks = (items, size = 500) => Array.from({ length: Math.ceil(items.length / size) }, (_, index) => items.slice(index * size, (index + 1) * size));
@@ -21,6 +23,9 @@ function cleanRow(value = {}, partial = false) {
   }
   if (!partial || Object.prototype.hasOwnProperty.call(value, 'status')) {
     row.status = validStatuses.has(row.status) ? row.status : 'not_contacted';
+  }
+  if (!partial || Object.prototype.hasOwnProperty.call(value, 'outreach_status')) {
+    row.outreach_status = validOutreachStatuses.has(row.outreach_status) ? row.outreach_status : 'unknown';
   }
   return row;
 }
@@ -112,6 +117,11 @@ export default async function handler(request, response) {
 
     const id = requireText(request.body?.id, 'Prospect ID');
     const changes = cleanRow(request.body?.changes || request.body, true);
+    const incoming = request.body?.changes || request.body;
+    if (incoming.outreach_status === 'opted_out') {
+      changes.opted_out_at = changes.opted_out_at || new Date().toISOString();
+      changes.status = 'not_interested';
+    }
     if (Object.prototype.hasOwnProperty.call(request.body?.changes || request.body, 'company')) {
       changes.company = requireText((request.body?.changes || request.body).company, 'Company name');
       changes.company_key = companyKey(changes.company);

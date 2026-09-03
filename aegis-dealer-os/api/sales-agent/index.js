@@ -14,7 +14,7 @@ export default async function handler(request, response) {
 
     if (request.method === 'GET') {
       const [prospects, runs] = await Promise.all([
-        context.supabase.from('prospect_companies').select('id,company,contact_name,phone,email,website,notes,status,next_action_at,last_contacted_at').eq('organisation_id', organisationId).not('phone', 'is', null).order('updated_at', { ascending: false }).limit(5000),
+        context.supabase.from('prospect_companies').select('id,company,contact_name,phone,email,website,notes,status,outreach_status,consent_source,consent_obtained_at,opted_out_at,next_action_at,last_contacted_at').eq('organisation_id', organisationId).not('phone', 'is', null).order('updated_at', { ascending: false }).limit(5000),
         context.supabase.from('sales_agent_runs').select('id,prospect_id,status,website_url,website_audit,call_brief,provider,outcome,approved_at,started_at,ended_at,last_error,created_at,updated_at').eq('organisation_id', organisationId).order('updated_at', { ascending: false }).limit(500)
       ]);
       if (prospects.error) throw prospects.error;
@@ -38,9 +38,9 @@ export default async function handler(request, response) {
         const batchLimit = Math.min(Math.max(Number.isFinite(requestedLimit) ? Math.floor(requestedLimit) : 100, 1), dailyAllowance);
         if (!batchLimit) return response.status(200).json({ queued: 0, message: 'The 100-prospect daily audit limit has already been reached.' });
         const { data: prospects, error: prospectsError } = await context.supabase.from('prospect_companies')
-          .select('id,company,contact_name,phone,email,website,notes,status')
+          .select('id,company,contact_name,phone,email,website,notes,status,outreach_status')
           .eq('organisation_id', organisationId).not('phone', 'is', null)
-          .neq('status', 'not_interested').order('updated_at').limit(batchLimit * 3);
+          .neq('status', 'not_interested').neq('outreach_status', 'opted_out').order('updated_at').limit(batchLimit * 3);
         if (prospectsError) throw prospectsError;
         const { data: activeRuns, error: activeError } = await context.supabase.from('sales_agent_runs')
           .select('prospect_id').eq('organisation_id', organisationId).eq('job_type', 'audit_prep')
@@ -67,10 +67,11 @@ export default async function handler(request, response) {
       if (action !== 'prepare') return response.status(400).json({ error: 'Use prepare to create an evidence-led call brief.' });
       const prospectId = id(request.body?.prospectId, 'Prospect');
       const { data: prospect, error: prospectError } = await context.supabase.from('prospect_companies')
-        .select('id,company,contact_name,phone,email,website,notes,status').eq('organisation_id', organisationId).eq('id', prospectId).maybeSingle();
+        .select('id,company,contact_name,phone,email,website,notes,status,outreach_status').eq('organisation_id', organisationId).eq('id', prospectId).maybeSingle();
       if (prospectError) throw prospectError;
       if (!prospect) return response.status(404).json({ error: 'Prospect not found.' });
       if (!prospect.phone) return response.status(400).json({ error: 'Add a phone number before preparing a call.' });
+      if (prospect.outreach_status === 'opted_out') return response.status(409).json({ error: 'This prospect has opted out and cannot be prepared for outreach.' });
       const websiteAudit = await auditProspectWebsite(prospect.website);
       const callBrief = await createSalesCallBrief({ prospect, websiteAudit, organisationName: context.organisation.name });
       const { data: run, error: runError } = await context.supabase.from('sales_agent_runs').insert({
@@ -115,6 +116,10 @@ export default async function handler(request, response) {
 
     if (action === 'queue') {
       if (current.status !== 'approved') return response.status(409).json({ error: 'Approve the call brief before queuing it.' });
+      const { data: prospectControl, error: prospectControlError } = await context.supabase.from('prospect_companies').select('outreach_status').eq('organisation_id', organisationId).eq('id', current.prospect_id).maybeSingle();
+      if (prospectControlError) throw prospectControlError;
+      if (prospectControl?.outreach_status === 'opted_out') return response.status(409).json({ error: 'This prospect has opted out and cannot be queued.' });
+      if (prospectControl?.outreach_status !== 'allowed') return response.status(409).json({ error: 'Mark the prospect outreach status as allowed after your compliance review before queuing a call.' });
       if (!salesAgentProviderReady()) return response.status(503).json({ error: 'No compliant phone provider is connected yet. Add SALES_AGENT_CALL_PROVIDER, SALES_AGENT_CALL_FROM and SALES_AGENT_CALL_URL after choosing a provider.' });
       const { data, error } = await context.supabase.from('sales_agent_runs').update({ status: 'queued', provider: process.env.SALES_AGENT_CALL_PROVIDER }).eq('id', runId).eq('organisation_id', organisationId).select('*').single();
       if (error) throw error;

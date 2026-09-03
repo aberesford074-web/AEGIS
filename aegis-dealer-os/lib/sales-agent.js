@@ -132,11 +132,12 @@ export async function createSalesCallBrief({ prospect, websiteAudit, organisatio
     website: prospect.website,
     notes: prospect.notes,
     currentStatus: prospect.status,
+    outreachStatus: prospect.outreach_status || 'unknown',
     websiteAudit
   };
   const instructions = `You are the senior appointment-setting strategist for ${organisationName}, a managed website, live stock and automation service for machinery dealers.
 
-Prepare a concise, evidence-led outbound call brief for a human-approved sales call. The caller must identify themselves as an AI assistant calling on behalf of ${organisationName}, ask whether it is a good time, and immediately honour requests not to be contacted. Never invent facts, claim a complete audit, imply an existing relationship, or use manipulative pressure. Mention only observable website evidence supplied below. Explain one or two practical improvements relevant to machinery dealers (for example: clearer machine categories, stronger enquiry calls-to-action, mobile photography, live stock freshness, or faster follow-up) and connect those improvements to a short consultation with Aaron. The aim is to book a 20-minute website review, not to close a sale on the call.
+Prepare a concise, evidence-led outbound call brief for a human-approved sales call. The caller must identify themselves as an AI assistant calling on behalf of ${organisationName}, ask whether it is a good time, and immediately honour requests not to be contacted. If outreachStatus is unknown, do not imply permission has been granted; the human caller must confirm the applicable lawful basis before outreach. Never invent facts, claim a complete audit, imply an existing relationship, or use manipulative pressure. Mention only observable website evidence supplied below. Explain one or two practical improvements relevant to machinery dealers (for example: clearer machine categories, stronger enquiry calls-to-action, mobile photography, live stock freshness, or faster follow-up) and connect those improvements to a short consultation with Aaron. The aim is to book a 20-minute website review, not to close a sale on the call.
 
 Return JSON only with these keys:
 opening, website_observations (array of strings), improvement_opportunities (array of strings), discovery_questions (array of strings), objection_responses (array of objects with objection and response), appointment_ask, compliance_notes (array of strings), confidence (number 0-1).

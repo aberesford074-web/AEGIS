@@ -78,6 +78,8 @@ shipping the matching native build.
 - A scheduled sales-agent audit queue. Managers can queue up to 100 new prospect
   audits per UTC day; a protected worker processes them in small batches with
   retries, deduplication and a daily-safe pace, then returns each brief to approval.
+- Prospect sourcing is provider-agnostic: start with manual research or CSV import;
+  Apollo is optional enrichment and is not required for website audits or briefs.
 - A universal, organisation-scoped business knowledge projection. Existing
   companies, contacts, machines, deals, activities, campaigns, approvals,
   integrations and audit events are indexed automatically. Future modules join
