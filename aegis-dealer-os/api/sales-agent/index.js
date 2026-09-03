@@ -73,7 +73,11 @@ export default async function handler(request, response) {
       if (!prospect.phone) return response.status(400).json({ error: 'Add a phone number before preparing a call.' });
       if (prospect.outreach_status === 'opted_out') return response.status(409).json({ error: 'This prospect has opted out and cannot be prepared for outreach.' });
       const websiteAudit = await auditProspectWebsite(prospect.website);
-      const callBrief = await createSalesCallBrief({ prospect, websiteAudit, organisationName: context.organisation.name });
+      // DealerFoundry is the public identity used by the appointment setter.
+      // Keep the organisation name for tenant scoping, but do not expose the
+      // legacy/internal AEGIS project label in prospect-facing copy.
+      const publicBrand = String(process.env.SALES_AGENT_BRAND || 'DealerFoundry').trim() || 'DealerFoundry';
+      const callBrief = await createSalesCallBrief({ prospect, websiteAudit, organisationName: publicBrand });
       const { data: run, error: runError } = await context.supabase.from('sales_agent_runs').insert({
         organisation_id: organisationId,
         prospect_id: prospect.id,
