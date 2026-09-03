@@ -109,7 +109,21 @@ function renderSalesAgent(data = {}) {
   $('#sales-agent-briefs').innerHTML = runs.slice(0, 8).map((run) => { const prospect = prospects.find((item) => item.id === run.prospect_id); if (!prospect || !run.call_brief) return ''; const brief = run.call_brief; return `<article class="panel agent-brief"><div class="agent-brief-head"><div><p class="eyebrow">${html(prospect.company)}</p><h2>${html(prospect.contact_name || 'Prospect call brief')}</h2></div>${tag(run.status)}</div><p><strong>Opening:</strong> ${html(brief.opening || '—')}</p><div class="agent-columns"><div><strong>Website observations</strong><ul>${(brief.websiteObservations || []).map((item) => `<li>${html(item)}</li>`).join('') || '<li>None recorded</li>'}</ul></div><div><strong>Improvement opportunities</strong><ul>${(brief.improvementOpportunities || []).map((item) => `<li>${html(item)}</li>`).join('') || '<li>None recorded</li>'}</ul></div><div><strong>Discovery questions</strong><ul>${(brief.discoveryQuestions || []).map((item) => `<li>${html(item)}</li>`).join('') || '<li>None recorded</li>'}</ul></div></div><p><strong>Appointment ask:</strong> ${html(brief.appointmentAsk || '—')}</p><p class="muted">${html((brief.complianceNotes || []).join(' · '))}</p></article>`; }).join('');
   $$('.prepare-sales-agent').forEach((button) => button.addEventListener('click', async () => { button.disabled = true; button.textContent = 'Preparing…'; try { const result = await api('/api/sales-agent', { method: 'POST', body: JSON.stringify({ action: 'prepare', prospectId: button.dataset.id }) }); toast(result.message || 'Call brief prepared.'); await loadScreen('sales-agent'); } catch (error) { toast(error.message, true); button.disabled = false; button.textContent = 'Prepare brief'; } }));
   $$('.approve-sales-agent').forEach((button) => button.addEventListener('click', async () => { button.disabled = true; try { const result = await api('/api/sales-agent', { method: 'PATCH', body: JSON.stringify({ action: 'approve', id: button.dataset.id }) }); toast(result.message || 'Brief approved.'); await loadScreen('sales-agent'); } catch (error) { toast(error.message, true); button.disabled = false; } }));
-  $('#queue-sales-agent')?.addEventListener('click', async (event) => { const button = event.currentTarget; button.disabled = true; button.textContent = 'Queueing…'; try { const result = await api('/api/sales-agent', { method: 'POST', body: JSON.stringify({ action: 'enqueue_batch', limit: 100 }) }); toast(result.message || 'Audit batch queued.'); await loadScreen('sales-agent'); } catch (error) { toast(error.message, true); button.disabled = false; button.textContent = 'Queue today’s audits'; } });
+  $('#queue-sales-agent')?.addEventListener('click', async (event) => {
+    const button = event.currentTarget;
+    button.disabled = true;
+    button.textContent = 'Queueing…';
+    try {
+      const result = await api('/api/sales-agent', { method: 'POST', body: JSON.stringify({ action: 'enqueue_batch', limit: 100 }) });
+      toast(result.message || 'Audit batch queued.');
+      await loadScreen('sales-agent');
+    } catch (error) {
+      toast(error.message, true);
+    } finally {
+      button.disabled = false;
+      button.textContent = 'Queue today’s audits';
+    }
+  });
 }
 function renderSales(items = []) { $('#sales-list').innerHTML = !items.length ? 'No sales have been recorded yet.' : `<table><thead><tr><th>Reference</th><th>Date</th><th>Value</th><th>Status</th></tr></thead><tbody>${items.map((item) => `<tr><td>${html(item.reference || '—')}</td><td>${html(item.sale_date || '—')}</td><td>${money(item.sale_price)}</td><td>${tag(item.status)}</td></tr>`).join('')}</tbody></table>`; $('#sales-list').classList.toggle('empty', !items.length); }
 function renderOpportunities(items = []) { $('#opportunity-list').innerHTML = !items.length ? 'No opportunities yet.' : `<table><thead><tr><th>Opportunity</th><th>Stage</th><th>Value</th><th>Next action</th></tr></thead><tbody>${items.map((item) => `<tr><td><strong>${html(item.title)}</strong></td><td>${tag(item.stage)}</td><td>${money(item.value)}</td><td>${html(item.next_action || '—')}</td></tr>`).join('')}</tbody></table>`; $('#opportunity-list').classList.toggle('empty', !items.length); }
