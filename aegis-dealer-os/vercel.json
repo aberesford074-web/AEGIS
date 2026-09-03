@@ -23,6 +23,21 @@
       "src": "api/stripe-webhook.js",
       "use": "@vercel/node",
       "config": { "maxDuration": 30 }
+    },
+    {
+      "src": "api/gpt/sales-agent.js",
+      "use": "@vercel/node",
+      "config": { "maxDuration": 30 }
+    },
+    {
+      "src": "api/twilio/voice.js",
+      "use": "@vercel/node",
+      "config": { "maxDuration": 30 }
+    },
+    {
+      "src": "api/twilio/status.js",
+      "use": "@vercel/node",
+      "config": { "maxDuration": 30 }
     }
   ],
   "routes": [
@@ -75,7 +90,10 @@
     { "src": "/api/proposals", "dest": "/api/router.js?route=proposals" },
     { "src": "/api/records", "dest": "/api/router.js?route=records" },
     { "src": "/api/search", "dest": "/api/router.js?route=search" },
-    { "src": "/api/sales-agent", "dest": "/api/router.js?route=salesAgent" }
+    { "src": "/api/sales-agent", "dest": "/api/router.js?route=salesAgent" },
+    { "src": "/api/gpt/sales-agent", "dest": "/api/gpt/sales-agent.js" },
+    { "src": "/api/twilio/voice", "dest": "/api/twilio/voice.js" },
+    { "src": "/api/twilio/status", "dest": "/api/twilio/status.js" }
   ],
   "crons": [
     {

@@ -1,0 +1,85 @@
+openapi: 3.1.0
+info:
+  title: DealerFoundry Sales Agent
+  version: 1.0.0
+  description: >-
+    Approval-first actions for the DealerFoundry sales agent. It can list
+    organisation-scoped prospects, prepare evidence-led website audit scripts,
+    record an explicit approval, and request a single Twilio call. It never
+    researches private data, bypasses opt-outs, or places a call without the
+    user's explicit confirmation.
+  license:
+    name: Proprietary
+servers:
+  - url: https://dealer.aegis-allterrain.co.uk
+security:
+  - DealerFoundryBearer: []
+paths:
+  /api/gpt/sales-agent:
+    post:
+      operationId: runDealerFoundrySalesAgent
+      x-openai-isConsequential: true
+      summary: Run an approved DealerFoundry sales-agent action
+      description: >-
+        Use action=status to check readiness, list_prospects to read the
+        prospect database, prepare_script to create an evidence-led website
+        audit and call script, approve_script only after the user has reviewed
+        that exact script, and request_call only after the user explicitly
+        confirms that exact approved call. The server enforces organisation
+        scope, opt-outs, daily limits, Twilio readiness and a live-call flag.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required:
+                - action
+              properties:
+                action:
+                  type: string
+                  enum:
+                    - status
+                    - list_prospects
+                    - prepare_script
+                    - approve_script
+                    - request_call
+                  description: The action to perform.
+                prospectId:
+                  type: string
+                  format: uuid
+                  description: Required by prepare_script.
+                runId:
+                  type: string
+                  format: uuid
+                  description: Required by approve_script and request_call.
+                limit:
+                  type: integer
+                  minimum: 1
+                  maximum: 100
+                  default: 25
+                confirmed:
+                  type: boolean
+                  const: true
+                  description: Required only after the user explicitly approves the exact script or call.
+      responses:
+        '200':
+          description: Action completed.
+        '201':
+          description: Script created.
+        '401':
+          description: Invalid action token.
+        '409':
+          description: Explicit approval, opt-out, readiness or state requirement was not met.
+        '429':
+          description: Daily call limit reached.
+        '503':
+          description: Required server-side integration is not configured.
+components:
+  securitySchemes:
+    DealerFoundryBearer:
+      type: http
+      scheme: bearer
+      bearerFormat: opaque action token
+      description: Server-side action token stored in the GPT Action authentication settings.
