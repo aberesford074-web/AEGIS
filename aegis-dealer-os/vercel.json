@@ -84,7 +84,7 @@
     },
     {
       "path": "/api/jobs/run-sales-agent",
-      "schedule": "*/15 * * * *"
+      "schedule": "0 3 * * *"
     }
   ]
 }

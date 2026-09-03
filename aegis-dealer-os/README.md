@@ -108,6 +108,10 @@ The agent must identify itself as an AI assistant, ask permission to continue,
 honour opt-outs and use only supplied public evidence. It does not dial, record,
 send messages or book appointments automatically. A compliant telephony provider
 (for example Twilio, Telnyx, Retell or a SIP trunk) and a review of UK PECR,
+TCPA and local calling rules are required before any live outreach. On Vercel's
+Hobby plan the audit worker is scheduled once daily; use the protected worker
+endpoint for an operator-triggered run or upgrade the plan for higher-frequency
+processing.
 US TCPA/state rules, call recording consent and caller-ID requirements are needed
 before enabling outbound calls. Configure the provider only after a human approves
 the brief; do not put any provider secret in browser code.
