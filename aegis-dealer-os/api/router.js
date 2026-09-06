@@ -36,6 +36,7 @@ import publicSignup from './public-signup.js';
 import publicBooking from './public-booking.js';
 import records from './records/index.js';
 import search from './search.js';
+import serviceLeads, { ingestServiceLead } from './service-leads/index.js';
 import salesAgent from './sales-agent/index.js';
 import stripeWebhook from './stripe-webhook.js';
 
@@ -78,6 +79,8 @@ const handlers = {
   runOperations,
   runSalesAgent,
   search,
+  serviceLeads,
+  ingestServiceLead,
   salesAgent,
   stripeWebhook
 };
