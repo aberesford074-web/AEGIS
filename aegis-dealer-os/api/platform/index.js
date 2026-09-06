@@ -145,6 +145,7 @@ const resources = {
   connections: { table: 'integration_connections', selection: 'id,organisation_id,provider_config_key,display_name,status,last_synced_at,created_at', sort: 'created_at' },
   platform_connections: { table: 'platform_integration_connections', selection: 'id,provider_config_key,display_name,status,last_synced_at,created_at,updated_at', sort: 'created_at', organisationScoped: false },
   automations: { table: 'automation_rules', selection: 'id,organisation_id,name,kind,enabled,cadence_minutes,requires_approval,last_run_at,next_run_at,updated_at' },
+  service_leads: { table: 'service_leads', selection: 'id,organisation_id,source_id,customer_name,phone,email,postcode,service,summary,description,priority,status,booking_status,appointment_date,appointment_window,portal_url,photos,source,created_at,updated_at', sort: 'created_at' },
   appointments: { table: 'website_consultations', selection: 'id,business_name,contact_name,contact_email,contact_phone,current_website_url,notes,starts_at,ends_at,timezone,status,source,created_at,updated_at', sort: 'starts_at', ascending: true, organisationScoped: false },
   audit: { table: 'audit_events', selection: 'id,organisation_id,actor_clerk_user_id,event_type,record_type,record_id,payload,created_at' }
 };
