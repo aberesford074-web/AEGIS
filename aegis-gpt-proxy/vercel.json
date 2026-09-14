@@ -21,6 +21,10 @@
       "destination": "/api/aegis-sales-os?action=getState&view=enquiries"
     },
     {
+      "source": "/api/enquiries/save",
+      "destination": "/api/aegis-sales-os?action=createEnquiry"
+    },
+    {
       "source": "/api/database",
       "destination": "/api/aegis-sales-os?action=getDatabaseContext"
     },
