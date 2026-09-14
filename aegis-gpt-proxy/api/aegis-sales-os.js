@@ -870,7 +870,7 @@ function normalizeStockPayload(payload) {
     id: cleanString(source.id || source.stockId || source.truckId || source.sku),
     category: cleanString(source.category || source.stockCategory || source.kind) || inferStockCategory(source),
     status: cleanString(source.status || source.stockStatus || source.availability) || 'in-stock',
-    featured: cleanString(source.featured || source.isFeatured),
+    featured: normalizeFeatured(source.featured !== undefined ? source.featured : source.isFeatured),
     brand: cleanString(source.brand || source.make || source.manufacturer || parsed.brand),
     model: cleanString(source.model || source.modelName || parsed.model || title),
     type: cleanString(source.type || source.machineType || source.equipmentType || source.productType),
@@ -895,9 +895,15 @@ function normalizeStockPayload(payload) {
   payload.item = item;
 
   if (payload.action === 'updateStockItem') {
-    payload.updates = item;
+    payload.updates = pickFields(item, Object.keys(item));
     payload.stockId = cleanString(payload.stockId || payload.truckId || payload.id || item.id);
   }
+}
+
+function normalizeFeatured(value) {
+  const text = cleanString(value);
+  if (!text) return '';
+  return /^(1|true|yes|y)$/i.test(text) ? 'Yes' : 'No';
 }
 
 function parseStockTitle(title) {
