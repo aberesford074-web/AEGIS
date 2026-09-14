@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
-const root = '/Users/aaronberesford/Desktop/AEGIS/aegis-gpt-proxy';
+const root = path.resolve(path.dirname(new URL(import.meta.url).pathname), '../aegis-gpt-proxy');
 const teamId = 'team_GBmgD7pqwqfC81QYB9qxCDr1';
 const projectName = 'aegis-gpt-proxy';
 const authPath = `${process.env.HOME}/Library/Application Support/com.vercel.cli/auth.json`;
