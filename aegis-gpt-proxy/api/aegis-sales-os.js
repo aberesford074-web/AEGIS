@@ -329,6 +329,7 @@ function requiredEnv(name) {
 function getProxyTokens() {
   const tokens = [
     process.env.AEGIS_GPT_PROXY_TOKEN,
+    process.env.AEGIS_AGENT_TOKEN,
     process.env.AEGIS_WEB_ACCESS_KEY,
     ...(process.env.AEGIS_GPT_PROXY_TOKENS || '').split(',')
   ]
