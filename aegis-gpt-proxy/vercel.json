@@ -61,6 +61,10 @@
       "destination": "/api/aegis-sales-os?action=saveStockItem"
     },
     {
+      "source": "/api/stock/update",
+      "destination": "/api/aegis-sales-os?action=updateStockItem"
+    },
+    {
       "source": "/api/stock",
       "destination": "/api/aegis-sales-os?action=getState&view=stock"
     },
