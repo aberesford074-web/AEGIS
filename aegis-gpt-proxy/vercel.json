@@ -53,6 +53,14 @@
       "destination": "/api/aegis-sales-os?action=moveDatabaseRowsToCampaign"
     },
     {
+      "source": "/api/stock/save",
+      "destination": "/api/aegis-sales-os?action=saveStockItem"
+    },
+    {
+      "source": "/api/stock/publish",
+      "destination": "/api/aegis-sales-os?action=saveStockItem"
+    },
+    {
       "source": "/api/stock",
       "destination": "/api/aegis-sales-os?action=getState&view=stock"
     },
