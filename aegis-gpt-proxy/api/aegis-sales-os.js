@@ -270,6 +270,20 @@ async function handler(req, res) {
   const forwardedPayload = stripProxyOnlyFields(payload);
   applyActionDefaults(forwardedPayload, requestedAction, action);
   forwardedPayload.action = action;
+
+  // The Apps Script stock normaliser assigns blank values to missing fields.
+  // Hydrate an update with the existing row first, so a focused change (for
+  // example only `year`) cannot erase the listing's images or other details.
+  if (action === 'updateStockItem') {
+    try {
+      await hydrateStockUpdate(forwardedPayload, upstreamUrl, upstreamAccess);
+    } catch (error) {
+      return res.status(409).json({
+        ok: false,
+        error: `Stock update stopped: ${error && error.message ? error.message : String(error)}`
+      });
+    }
+  }
   normalizeStockPayload(forwardedPayload);
   normalizeSendEmailPayload(forwardedPayload);
   normalizeGmailReplyPayload(forwardedPayload);
@@ -398,6 +412,58 @@ function applyActionDefaults(payload, requestedAction, action) {
     payload.withEmailOnly = true;
     if (!payload.limit) payload.limit = 100;
   }
+}
+
+async function hydrateStockUpdate(payload, upstreamUrl, upstreamAccess) {
+  const partial = payload.item || payload.stock || payload.listing || payload.truck || payload.vehicle || payload.equipment || payload;
+  const stockId = cleanString(payload.stockId || payload.truckId || payload.id || (partial && (partial.id || partial.stockId || partial.truckId)));
+
+  if (!stockId) {
+    throw new Error('an exact stock ID is required');
+  }
+
+  const response = await fetch(upstreamUrl, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ action: 'getState', view: 'stock', access: upstreamAccess }),
+    redirect: 'follow'
+  });
+
+  if (!response.ok) {
+    throw new Error(`could not read the existing stock record (${response.status})`);
+  }
+
+  const data = parseJsonOrText(await response.text());
+  const existing = findStockRecord(data, stockId);
+  if (!existing) {
+    throw new Error(`stock ID ${stockId} was not found`);
+  }
+
+  const merged = { ...existing, ...partial, id: stockId };
+  payload.item = merged;
+  payload.updates = merged;
+  payload.stockId = stockId;
+}
+
+function findStockRecord(value, stockId, visited = new Set()) {
+  if (!value || typeof value !== 'object' || visited.has(value)) return null;
+  visited.add(value);
+
+  if (Array.isArray(value)) {
+    for (const item of value) {
+      const match = findStockRecord(item, stockId, visited);
+      if (match) return match;
+    }
+    return null;
+  }
+
+  if (cleanString(value.id) === stockId) return value;
+
+  for (const nested of Object.values(value)) {
+    const match = findStockRecord(nested, stockId, visited);
+    if (match) return match;
+  }
+  return null;
 }
 
 function buildProxyResponse({ upstreamOk, upstreamStatus, requestedAction, action, data }) {
